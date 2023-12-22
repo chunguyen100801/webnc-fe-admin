@@ -10,6 +10,7 @@ export const authApiPath = {
 };
 
 export const userApiPath = {
+  listUser: PREFIX_USER,
   getProfile: PREFIX_USER + 'me',
   changePassword: PREFIX_USER + 'change-password',
   forgotPassword: PREFIX_USER + 'forgot-password',

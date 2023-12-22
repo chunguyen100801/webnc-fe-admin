@@ -1,3 +1,4 @@
+/* eslint-disable prefer-template */
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
@@ -20,10 +21,11 @@ export default function UserTableRow({
   selected,
   name,
   avatarUrl,
-  company,
+  email,
   role,
   isVerified,
   status,
+  registionTime,
   handleClick,
 }) {
   const [open, setOpen] = useState(null);
@@ -45,21 +47,25 @@ export default function UserTableRow({
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Avatar alt={name} src={avatarUrl} />
+            <Avatar alt={name} src={avatarUrl}>
+              {name.charAt(0).toUpperCase()}
+            </Avatar>
             <Typography variant="subtitle2" noWrap>
               {name}
             </Typography>
           </Stack>
         </TableCell>
 
-        <TableCell>{company}</TableCell>
+        <TableCell>{email}</TableCell>
+
+        <TableCell>{registionTime}</TableCell>
 
         <TableCell>{role}</TableCell>
 
         <TableCell align="center">{isVerified ? 'Yes' : 'No'}</TableCell>
 
         <TableCell>
-          <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
+          <Label color={(status === 'banned' && 'error') || 'success'}>{status || 'Active'}</Label>
         </TableCell>
 
         <TableCell align="right">
@@ -95,11 +101,12 @@ export default function UserTableRow({
 
 UserTableRow.propTypes = {
   avatarUrl: PropTypes.any,
-  company: PropTypes.any,
+  email: PropTypes.any,
   handleClick: PropTypes.func,
   isVerified: PropTypes.any,
   name: PropTypes.any,
   role: PropTypes.any,
   selected: PropTypes.any,
   status: PropTypes.string,
+  registionTime: PropTypes.any,
 };

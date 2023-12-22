@@ -1,6 +1,9 @@
 /* eslint-disable no-unused-vars */
+import { useState } from 'react';
+import { toast } from 'react-toastify';
 // eslint-disable-next-line perfectionist/sort-imports
 import { useForm } from 'react-hook-form';
+import { useMutation } from '@tanstack/react-query';
 import { Link as RouterLink } from 'react-router-dom';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,19 +21,21 @@ import { useRouter } from 'src/routes/hooks';
 import { loginSchema } from 'src/utils/rules';
 
 import path from 'src/constants/path';
+import userApi from 'src/apis/user.api';
 import { bgGradient } from 'src/theme/css';
 
 const forgotPasswordSchema = loginSchema.pick({ email: true });
 
 export default function ForgotPasswordView() {
   const theme = useTheme();
+  const { isSendEmail, setIsSendEmail } = useState(false);
 
   const router = useRouter();
 
   const {
     register,
     handleSubmit,
-    // setError,
+    setError,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -40,13 +45,24 @@ export default function ForgotPasswordView() {
     resolver: zodResolver(forgotPasswordSchema),
   });
 
-  // const forgotPasswordMutation = useMutation({
-  //   mutationFn: (body) => userApi.forgotPassword(body)
-  // })
+  const forgotPasswordMutation = useMutation({
+    mutationFn: (body) => userApi.forgotPassword(body),
+  });
 
   const onSubmit = handleSubmit((data) => {
-    // forgotPasswordMutation.mutate(data)
-    console.log(data);
+    forgotPasswordMutation.mutate(data, {
+      onSuccess: () => {
+        toast.success('Your password has been reset. Please check your email.');
+        setIsSendEmail(true);
+        // router.push(path.signin);
+      },
+      onError: (error) => {
+        setError('email', {
+          type: 'Server',
+          message: error?.response?.data?.message,
+        });
+      },
+    });
   });
 
   const handleResendVerifyPassword = () => {

@@ -2,7 +2,7 @@
 /* eslint-disable perfectionist/sort-imports */
 /* eslint-disable unused-imports/no-unused-imports */
 /* eslint-disable no-unused-vars */
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 // eslint-disable-next-line perfectionist/sort-imports
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
@@ -29,9 +29,10 @@ import { bgGradient } from 'src/theme/css';
 
 import Iconify from 'src/components/iconify';
 import authApi from 'src/apis/auth.api';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { isAxiosBadRequestError, isAxiosNotFound, isAxiosUnauthorized } from 'src/utils/error';
 import { AppContext } from 'src/context/app.context';
+import useQueryString from 'src/routes/hooks/use-queryString';
 
 // ----------------------------------------------------------------------
 
@@ -40,15 +41,15 @@ export default function LoginView() {
 
   const navigate = useNavigate();
 
-  const { setIsAuthenticated } = useContext(AppContext);
+  const { setIsAuthenticated, setProfile } = useContext(AppContext);
 
   const [showPassword, setShowPassword] = useState(false);
 
-  // const queryString = useQueryString()
-  // const queryConfig = {
-  //   access_token: queryString.access_token || '',
-  //   refresh_token: queryString.refresh_token || ''
-  // }
+  const queryString = useQueryString();
+  const queryConfig = {
+    access_token: queryString.access_token || '',
+    refresh_token: queryString.refresh_token || '',
+  };
 
   const {
     register,
@@ -63,21 +64,38 @@ export default function LoginView() {
     resolver: zodResolver(loginSchema),
   });
 
-  const handleClick = () => {
-    // router.push('/');
-  };
-
   const signinMutation = useMutation({
     mutationFn: (body) => authApi.signin(body),
   });
 
+  const getMeQuery = useQuery({
+    queryKey: ['me'],
+    queryFn: authApi.getMe,
+    enabled: signinMutation.isSuccess,
+    gcTime: 0,
+  });
+  useEffect(() => {
+    if (getMeQuery.isSuccess) {
+      const profile = getMeQuery.data.data;
+      setProfile(profile);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getMeQuery.isSuccess]);
+
+  useEffect(() => {
+    if (queryConfig.access_token && queryConfig.refresh_token) {
+      getMeQuery.refetch();
+    }
+  }, [getMeQuery, queryConfig.access_token, queryConfig.refresh_token]);
+
   const onSubmit = handleSubmit((data) => {
-    if (signinMutation.isPending) return;
+    if (signinMutation.isPending || getMeQuery.isFetching) return;
 
     signinMutation.mutate(data, {
       onSuccess: (res) => {
         setIsAuthenticated(true);
         navigate(path.user);
+        getMeQuery.refetch();
       },
       onError: (error) => {
         if (isAxiosBadRequestError(error) || isAxiosUnauthorized(error) || isAxiosNotFound(error)) {

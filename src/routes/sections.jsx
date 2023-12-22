@@ -7,6 +7,7 @@ import { lazy, Suspense, useContext } from 'react';
 import { Outlet, Navigate, useRoutes } from 'react-router-dom';
 import path from 'src/constants/path';
 import DashboardLayout from 'src/layouts/dashboard';
+import ResetPasswordPage from 'src/pages/reset-password';
 
 export const UserPage = lazy(() => import('src/pages/user'));
 export const LoginPage = lazy(() => import('src/pages/login'));
@@ -62,6 +63,10 @@ export default function Router() {
         {
           path: path.signin,
           element: <LoginPage />,
+        },
+        {
+          path: path.resetPassword,
+          element: <ResetPasswordPage />,
         },
       ],
     },

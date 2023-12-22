@@ -1,3 +1,5 @@
+/* eslint-disable no-unsafe-optional-chaining */
+/* eslint-disable prefer-template */
 /* eslint-disable perfectionist/sort-named-imports */
 /* eslint-disable perfectionist/sort-imports */
 /* eslint-disable unused-imports/no-unused-imports */
@@ -12,11 +14,11 @@ import { alpha } from '@mui/material/styles';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-
+// import AccountCircle from '@mui/icons-material/AccountCircle'
 import { RouterLink } from 'src/routes/components';
 
 import path from 'src/constants/path';
-import { account } from 'src/_mock/account';
+
 import { useMutation } from '@tanstack/react-query';
 import authApi from 'src/apis/auth.api';
 import { AppContext } from 'src/context/app.context';
@@ -35,7 +37,7 @@ const MENU_OPTIONS = [
 
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
-  const { setIsAuthenticated } = useContext(AppContext);
+  const { setIsAuthenticated, profile } = useContext(AppContext);
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -56,6 +58,7 @@ export default function AccountPopover() {
     signoutMutation.mutate();
     handleClose();
   };
+  const fullName = `${profile?.firstName} ${profile?.lastName}`;
 
   return (
     <>
@@ -72,15 +75,15 @@ export default function AccountPopover() {
         }}
       >
         <Avatar
-          src={account.photoURL}
-          alt={account.displayName}
+          src={profile?.avatar}
+          alt={fullName}
           sx={{
             width: 36,
             height: 36,
             border: (theme) => `solid 2px ${theme.palette.background.default}`,
           }}
         >
-          {account.displayName.charAt(0).toUpperCase()}
+          {fullName.charAt(0).toUpperCase()}
         </Avatar>
       </IconButton>
 
@@ -101,10 +104,10 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2 }}>
           <Typography variant="subtitle2" noWrap>
-            {account.displayName}
+            {fullName}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
+            {profile?.email}
           </Typography>
         </Box>
 
