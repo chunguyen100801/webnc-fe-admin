@@ -29,12 +29,29 @@ const authValidation = {
     .min(1, 'Phone number is required')
     .max(20, 'Maximum length is 20 characters'),
   address: zod.string().min(1, 'Address is required').max(160, 'Maximum length is 160 characters'),
+  role: zod.string().min(1, 'Role is required'),
 };
 
 export const loginSchema = zod.object({
   email: authValidation.email,
   password: authValidation.password,
 });
+
+export const registerSchema = zod
+  .object({
+    email: authValidation.email,
+    password: authValidation.password,
+    confirmPassword: authValidation.confirmPassword,
+    firstName: authValidation.firstName,
+    lastName: authValidation.lastName,
+    phoneNumber: authValidation.phoneNumber,
+    address: authValidation.address,
+    role: authValidation.role,
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Confirm password does not match',
+    path: ['confirmPassword'],
+  });
 
 export const changePasswordSchema = zod
   .object({

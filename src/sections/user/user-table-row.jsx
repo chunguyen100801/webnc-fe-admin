@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable unused-imports/no-unused-imports */
 /* eslint-disable prefer-template */
 import { useState } from 'react';
 import PropTypes from 'prop-types';
@@ -11,6 +13,8 @@ import MenuItem from '@mui/material/MenuItem';
 import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
+
+import { Role, Status, Verify } from 'src/constants/const';
 
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
@@ -60,12 +64,17 @@ export default function UserTableRow({
 
         <TableCell>{registionTime}</TableCell>
 
-        <TableCell>{role}</TableCell>
+        <TableCell>
+          {(role || Role.USER).charAt(0).toUpperCase() + (role || Role.USER).slice(1).toLowerCase()}
+        </TableCell>
 
-        <TableCell align="center">{isVerified ? 'Yes' : 'No'}</TableCell>
+        <TableCell align="center">{isVerified === Verify.VERIFY ? 'Yes' : 'No'}</TableCell>
 
         <TableCell>
-          <Label color={(status === 'banned' && 'error') || 'success'}>{status || 'Active'}</Label>
+          <Label color={(status === 'banned' && 'error') || 'success'}>
+            {(status || Status.ACTIVE).charAt(0).toUpperCase() +
+              (status || Status.ACTIVE).slice(1).toLowerCase()}
+          </Label>
         </TableCell>
 
         <TableCell align="right">
@@ -89,6 +98,17 @@ export default function UserTableRow({
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
         </MenuItem>
+        {status === Status.BLOCKED ? (
+          <MenuItem onClick={handleCloseMenu}>
+            <Iconify icon="eva:unlock-fill" sx={{ mr: 2 }} />
+            Unlock
+          </MenuItem>
+        ) : (
+          <MenuItem onClick={handleCloseMenu}>
+            <Iconify icon="eva:lock-fill" sx={{ mr: 2 }} />
+            Lock
+          </MenuItem>
+        )}
 
         <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />

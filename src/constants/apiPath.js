@@ -4,6 +4,7 @@ const PREFIX_USER = 'users/';
 
 export const authApiPath = {
   signin: PREFIX_AUTH + 'login',
+  signup: PREFIX_AUTH + 'register',
   signout: PREFIX_AUTH + 'logout',
   getMe: PREFIX_AUTH + 'me',
   refreshToken: PREFIX_AUTH + 'refresh-token',
