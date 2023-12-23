@@ -16,7 +16,9 @@ import {
   FormControl,
   InputLabel,
   MenuItem,
+  IconButton,
 } from '@mui/material';
+// import CloseIcon from '@mui/icons-material/Close';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,6 +30,8 @@ import authApi from 'src/apis/auth.api';
 import { Role } from 'src/constants/const';
 import { toast } from 'react-toastify';
 import { USER_MESSAGES } from 'src/constants/message';
+import { Icon } from '@iconify/react';
+import Iconify from '../iconify';
 
 const NewUserForm = ({ open, onClose, order, page, rowsPerPage }) => {
   const navigate = useNavigate();
@@ -83,9 +87,15 @@ const NewUserForm = ({ open, onClose, order, page, rowsPerPage }) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle variant="h4" sx={{}}>
+    <Dialog open={open}>
+      <DialogTitle
+        variant="h4"
+        sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+      >
         Add New User
+        <IconButton onClick={onClose} color="inherit" size="small">
+          <Icon icon="material-symbols:close" width="25" />
+        </IconButton>
       </DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ marginTop: 1 }}>

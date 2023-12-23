@@ -1,3 +1,5 @@
+/* eslint-disable perfectionist/sort-imports */
+/* eslint-disable perfectionist/sort-named-imports */
 /* eslint-disable no-unused-vars */
 /* eslint-disable unused-imports/no-unused-imports */
 /* eslint-disable prefer-template */
@@ -18,6 +20,8 @@ import { Role, Status, Verify } from 'src/constants/const';
 
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
+import { Button, Dialog, DialogContent, DialogTitle, Table } from '@mui/material';
+import { EditUserModal } from 'src/components/User';
 
 // ----------------------------------------------------------------------
 
@@ -33,6 +37,8 @@ export default function UserTableRow({
   handleClick,
 }) {
   const [open, setOpen] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -40,6 +46,25 @@ export default function UserTableRow({
 
   const handleCloseMenu = () => {
     setOpen(null);
+  };
+
+  const handleCloseModal = () => {
+    setOpen(null);
+    setOpenModal(false);
+  };
+
+  const handleEditButtonClick = () => {
+    setOpen(null);
+    setSelectedUser({
+      name,
+      email,
+      role,
+      avatarUrl,
+      isVerified,
+      status,
+      registionTime,
+    });
+    setOpenModal(true);
   };
 
   return (
@@ -94,7 +119,7 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={handleCloseMenu}>
+        <MenuItem onClick={handleEditButtonClick}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
         </MenuItem>
@@ -115,6 +140,7 @@ export default function UserTableRow({
           Delete
         </MenuItem>
       </Popover>
+      <EditUserModal open={openModal} onClose={handleCloseModal} user={selectedUser} />
     </>
   );
 }

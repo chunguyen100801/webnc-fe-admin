@@ -30,7 +30,7 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
       }}
     >
       <OutlinedInput
-        defaultValue={filterName}
+        defaultValue={filterName === ' ' ? '' : filterName}
         onChange={onFilterName}
         placeholder="Search by name, email"
         startAdornment={
