@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable unused-imports/no-unused-imports */
 import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
@@ -33,9 +35,9 @@ export default function Header({ onOpenNav }) {
         </IconButton>
       )}
 
-      <Typography variant="h4" className="text-black">
+      {/* <Typography variant="h4" className="text-black">
         CLASSROOM
-      </Typography>
+      </Typography> */}
 
       <Box sx={{ flexGrow: 1 }} />
       <Stack direction="row" alignItems="center" spacing={1}>

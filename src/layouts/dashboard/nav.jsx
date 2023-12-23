@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useEffect, useContext } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -14,10 +14,9 @@ import { RouterLink } from 'src/routes/components';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { account } from 'src/_mock/account';
-
 // eslint-disable-next-line perfectionist/sort-imports
 import path from 'src/constants/path';
+import { AppContext } from 'src/context/app.context';
 
 import Scrollbar from 'src/components/scrollbar';
 
@@ -30,6 +29,7 @@ export default function Nav({ openNav, onCloseNav }) {
   const pathname = usePathname();
 
   const upLg = useResponsive('up', 'lg');
+  const { profile } = useContext(AppContext);
 
   useEffect(() => {
     if (openNav) {
@@ -37,7 +37,7 @@ export default function Nav({ openNav, onCloseNav }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
-
+  const fullName = `${profile?.firstName} ${profile?.lastName}`;
   const renderAccount = (
     <Box
       sx={{
@@ -48,16 +48,18 @@ export default function Nav({ openNav, onCloseNav }) {
         display: 'flex',
         borderRadius: 1.5,
         alignItems: 'center',
-        bgcolor: (theme) => alpha(theme.palette.grey[500], 0.12),
+        bgcolor: (theme) => alpha(theme.palette.grey[600], 0.1),
       }}
     >
-      <Avatar src={account.photoURL} alt="photoURL" />
+      <Avatar src={profile?.avatar} alt={fullName}>
+        {fullName.charAt(0).toUpperCase()}
+      </Avatar>
 
       <Box sx={{ ml: 2 }}>
-        <Typography variant="subtitle2">{account.displayName}</Typography>
+        <Typography variant="subtitle2">{fullName}</Typography>
 
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          {account.role}
+          {profile?.role || 'Admin'}
         </Typography>
       </Box>
     </Box>
@@ -84,7 +86,9 @@ export default function Nav({ openNav, onCloseNav }) {
     >
       <div className="text-center mt-10">
         <RouterLink to={path.user}>
-          <Typography variant="h4">ADMIN</Typography>
+          <Typography variant="h4" className="text-blue-500">
+            Classroom
+          </Typography>
         </RouterLink>
       </div>
 

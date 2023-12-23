@@ -1,6 +1,10 @@
+/* eslint-disable prefer-template */
+/* eslint-disable perfectionist/sort-imports */
+/* eslint-disable import/order */
 /* eslint-disable no-unused-vars */
 /* eslint-disable unused-imports/no-unused-imports */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -11,7 +15,10 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
+import { fDate } from 'src/utils/format-time';
+
 import { users } from 'src/_mock/user';
+import userApi from 'src/apis/user.api';
 
 import Scrollbar from 'src/components/scrollbar';
 
@@ -21,6 +28,10 @@ import UserTableHead from '../user-table-head';
 import TableEmptyRows from '../table-empty-rows';
 import UserTableToolbar from '../user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
+import { Button } from '@mui/material';
+import Iconify from 'src/components/iconify';
+import { NewUserForm } from 'src/components/User';
+import { debounce } from 'lodash';
 
 // ----------------------------------------------------------------------
 
@@ -31,11 +42,40 @@ export default function UserView() {
 
   const [selected, setSelected] = useState([]);
 
-  const [orderBy, setOrderBy] = useState('name');
+  const [orderBy, setOrderBy] = useState('registrationTime');
 
-  const [filterName, setFilterName] = useState('');
+  const [filterName, setFilterName] = useState(' ');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const [toleUsers, setToleUsers] = useState(0);
+
+  const queryUserList = {
+    order,
+    page: page + 1,
+    take: rowsPerPage,
+    search: filterName,
+  };
+
+  const userData = useQuery({
+    queryKey: ['list-users', queryUserList],
+    queryFn: () => userApi.getListUsers(queryUserList),
+  });
+
+  const usersList = userData.data?.data?.data;
+  console.log(usersList);
+
+  useEffect(() => {
+    userData.refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rowsPerPage, order, filterName, page]);
+
+  useEffect(() => {
+    if (userData.isSuccess) {
+      setToleUsers(usersList?.meta?.itemCount);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userData]);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -47,18 +87,18 @@ export default function UserView() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = users.map((n) => n.name);
+      const newSelecteds = usersList?.data?.map((n) => n.email);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
+  const handleClick = (event, email) => {
+    const selectedIndex = selected.indexOf(email);
     let newSelected = [];
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
+      newSelected = newSelected.concat(selected, email);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -81,18 +121,25 @@ export default function UserView() {
     setRowsPerPage(parseInt(event.target.value, 10));
   };
 
-  const handleFilterByName = (event) => {
+  const handleFilterByName = debounce((event) => {
+    const valueSearch = ' ' + event.target.value.trim();
     setPage(0);
-    setFilterName(event.target.value);
-  };
+    setFilterName(valueSearch);
+    console.log(valueSearch);
+  }, 500);
 
   const dataFiltered = applyFilter({
-    inputData: users,
+    inputData: usersList?.data,
     comparator: getComparator(order, orderBy),
-    filterName,
   });
 
-  const notFound = !dataFiltered.length && !!filterName;
+  const [openNewUserModal, setOpenNewUserModal] = useState(false);
+
+  const handleCloseNewUserModal = () => {
+    setOpenNewUserModal(false);
+  };
+
+  const notFound = !userData.isLoading && !dataFiltered?.length && filterName !== ' ';
 
   return (
     <Container>
@@ -100,9 +147,14 @@ export default function UserView() {
         <Typography variant="h4" className="text-blue-500">
           Users
         </Typography>
-        <Typography variant="h6" className="text-blue-500">
-          Total: 100
-        </Typography>
+        <Button
+          variant="contained"
+          color="inherit"
+          startIcon={<Iconify icon="eva:plus-fill" />}
+          onClick={() => setOpenNewUserModal(true)}
+        >
+          New User
+        </Button>
       </Stack>
 
       <Card>
@@ -117,13 +169,14 @@ export default function UserView() {
               <UserTableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={users.length}
+                rowCount={usersList?.data?.length || 0}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'name', label: 'Name' },
-                  { id: 'company', label: 'Company' },
+                  { id: 'firstName', label: 'Name' },
+                  { id: 'email', label: 'Email' },
+                  { id: 'registrationTime', label: 'Registration time' },
                   { id: 'role', label: 'Role' },
                   { id: 'isVerified', label: 'Verified', align: 'center' },
                   { id: 'status', label: 'Status' },
@@ -131,28 +184,32 @@ export default function UserView() {
                 ]}
               />
               <TableBody>
-                {dataFiltered
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <UserTableRow
-                      key={row.id}
-                      name={row.name}
-                      role={row.role}
-                      status={row.status}
-                      company={row.company}
-                      avatarUrl={row.avatarUrl}
-                      isVerified={row.isVerified}
-                      selected={selected.indexOf(row.name) !== -1}
-                      handleClick={(event) => handleClick(event, row.name)}
-                    />
-                  ))}
-
-                <TableEmptyRows
-                  height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, users.length)}
-                />
-
-                {notFound && <TableNoData query={filterName} />}
+                {dataFiltered?.map((row) => (
+                  <UserTableRow
+                    key={row.id}
+                    name={`${row?.firstName} ${row?.lastName}`}
+                    role={row?.role}
+                    registionTime={fDate(row?.createdAt)}
+                    status={row?.status}
+                    email={row?.email}
+                    avatarUrl={row?.avatar}
+                    isVerified={row?.verify}
+                    selected={selected.indexOf(row?.email) !== -1}
+                    handleClick={(event) => handleClick(event, row?.email)}
+                  />
+                ))}
+                {!notFound ? (
+                  <TableEmptyRows
+                    height={77}
+                    emptyRows={emptyRows(
+                      page,
+                      rowsPerPage,
+                      usersList?.meta?.itemCount || toleUsers
+                    )}
+                  />
+                ) : (
+                  <TableNoData query={filterName} />
+                )}
               </TableBody>
             </Table>
           </TableContainer>
@@ -161,13 +218,21 @@ export default function UserView() {
         <TablePagination
           page={page}
           component="div"
-          count={users.length}
+          count={usersList?.meta?.itemCount || toleUsers}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5, 10, 25]}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Card>
+      <NewUserForm
+        open={openNewUserModal}
+        onClose={handleCloseNewUserModal}
+        order={order}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        // Pass any necessary props or callback functions
+      />
     </Container>
   );
 }
