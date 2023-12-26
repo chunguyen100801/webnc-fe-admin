@@ -17,6 +17,8 @@ import {
   InputLabel,
   MenuItem,
   IconButton,
+  Box,
+  CircularProgress,
 } from '@mui/material';
 // import CloseIcon from '@mui/icons-material/Close';
 import { useNavigate } from 'react-router-dom';
@@ -39,6 +41,7 @@ const NewUserForm = ({ open, onClose, order, page, rowsPerPage }) => {
 
   const {
     register,
+    reset,
     handleSubmit,
     setError,
     watch,
@@ -55,12 +58,13 @@ const NewUserForm = ({ open, onClose, order, page, rowsPerPage }) => {
     if (signupMutation.isPending) return;
 
     const body = omit(data, ['confirmPassword']);
-
+    body.role = body.role === Role.ADMIN ? Role.ADMIN : Role.STUDENT;
     signupMutation.mutate(body, {
       onSuccess: (res) => {
         queryClient.invalidateQueries({
           queryKey: ['list-users', { order, page: page + 1, take: rowsPerPage }],
         });
+        reset();
         toast.success(USER_MESSAGES.CHECK_EMAIL);
         onClose();
       },
@@ -88,6 +92,17 @@ const NewUserForm = ({ open, onClose, order, page, rowsPerPage }) => {
 
   return (
     <Dialog open={open}>
+      <Box
+        sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          display: signupMutation.isPending ? 'flex' : 'none', // Hiển thị khi isLoading là true
+        }}
+      >
+        <CircularProgress />
+      </Box>
       <DialogTitle
         variant="h4"
         sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
@@ -101,21 +116,39 @@ const NewUserForm = ({ open, onClose, order, page, rowsPerPage }) => {
         <Stack spacing={2} sx={{ marginTop: 1 }}>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <div>
-              <TextField label="First Name" name="firstName" fullWidth {...register('firstName')} />
+              <TextField
+                disabled={signupMutation.isPending}
+                label="First Name"
+                name="firstName"
+                fullWidth
+                {...register('firstName')}
+              />
               <p className="ml-1 flex min-h-[20px] items-center gap-1 text-xs font-normal text-red-400">
                 {errors.firstName?.message}
               </p>
             </div>
             <div>
               {' '}
-              <TextField label="Last Name" name="lastName" fullWidth {...register('lastName')} />
+              <TextField
+                disabled={signupMutation.isPending}
+                label="Last Name"
+                name="lastName"
+                fullWidth
+                {...register('lastName')}
+              />
               <p className="ml-1 flex min-h-[20px] items-center gap-1 text-xs font-normal text-red-400">
                 {errors.lastName?.message}
               </p>
             </div>
           </Stack>
           <div>
-            <TextField label="Email" name="email" fullWidth {...register('email')} />
+            <TextField
+              disabled={signupMutation.isPending}
+              label="Email"
+              name="email"
+              fullWidth
+              {...register('email')}
+            />
             <p className="ml-1 flex min-h-[20px] items-center gap-1 text-xs font-normal text-red-400">
               {errors.email?.message}
             </p>
@@ -123,6 +156,7 @@ const NewUserForm = ({ open, onClose, order, page, rowsPerPage }) => {
           <div>
             {' '}
             <TextField
+              disabled={signupMutation.isPending}
               label="Phone Number"
               name="phoneNumber"
               fullWidth
@@ -133,7 +167,13 @@ const NewUserForm = ({ open, onClose, order, page, rowsPerPage }) => {
             </p>
           </div>
           <div>
-            <TextField name="address" label="Address" fullWidth {...register('address')} />
+            <TextField
+              disabled={signupMutation.isPending}
+              name="address"
+              label="Address"
+              fullWidth
+              {...register('address')}
+            />
             <p className="ml-1 flex min-h-[20px] items-center gap-1 text-xs font-normal text-red-400">
               {errors.address?.message}
             </p>
@@ -141,6 +181,7 @@ const NewUserForm = ({ open, onClose, order, page, rowsPerPage }) => {
           <div>
             {' '}
             <TextField
+              disabled={signupMutation.isPending}
               label="Password"
               name="password"
               type="password"
@@ -154,6 +195,7 @@ const NewUserForm = ({ open, onClose, order, page, rowsPerPage }) => {
           <div>
             {' '}
             <TextField
+              disabled={signupMutation.isPending}
               name="confirmPassword"
               label="Confirm Password"
               type="password"
@@ -167,6 +209,7 @@ const NewUserForm = ({ open, onClose, order, page, rowsPerPage }) => {
           <FormControl fullWidth>
             <InputLabel id="role-label">Role</InputLabel>
             <Select
+              disabled={signupMutation.isPending}
               labelId="role-label"
               label="Role"
               {...register('role')}
@@ -179,8 +222,10 @@ const NewUserForm = ({ open, onClose, order, page, rowsPerPage }) => {
         </Stack>
       </DialogContent>
       <DialogActions sx={{ marginBottom: 2 }}>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={onSubmit} color="primary">
+        <Button onClick={onClose} disabled={signupMutation.isPending}>
+          Cancel
+        </Button>
+        <Button onClick={onSubmit} disabled={signupMutation.isPending} color="primary">
           Add User
         </Button>
       </DialogActions>

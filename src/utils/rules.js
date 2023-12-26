@@ -5,7 +5,8 @@ const authValidation = {
     .string()
     .min(1, { message: 'Email is required' })
     .email('Email is invalid')
-    .max(160, 'Length from 5 to 160 characters'),
+    .max(160, 'Length from 5 to 160 characters')
+    .trim(),
   password: zod
     .string()
     .min(1, 'Password is required')
@@ -19,17 +20,25 @@ const authValidation = {
   firstName: zod
     .string()
     .min(1, 'First name is required')
-    .max(160, 'Maximum length is 160 characters'),
+    .max(160, 'Maximum length is 160 characters')
+    .trim(),
   lastName: zod
     .string()
     .min(1, 'Last name is required')
-    .max(160, 'Maximum length is 160 characters'),
+    .max(160, 'Maximum length is 160 characters')
+    .trim(),
   phoneNumber: zod
     .string()
     .min(1, 'Phone number is required')
-    .max(20, 'Maximum length is 20 characters'),
-  address: zod.string().min(1, 'Address is required').max(160, 'Maximum length is 160 characters'),
-  role: zod.string().min(1, 'Role is required'),
+    .max(20, 'Maximum length is 20 characters')
+    .trim(),
+  address: zod
+    .string()
+    .min(1, 'Address is required')
+    .max(160, 'Maximum length is 160 characters')
+    .trim(),
+  role: zod.string().min(1, 'Role is required').trim(),
+  sex: zod.string().min(1, 'Sex is required').trim(),
 };
 
 export const loginSchema = zod.object({
@@ -52,6 +61,14 @@ export const registerSchema = zod
     message: 'Confirm password does not match',
     path: ['confirmPassword'],
   });
+
+export const updateProfileSchema = zod.object({
+  firstName: authValidation.firstName,
+  lastName: authValidation.lastName,
+  phoneNumber: authValidation.phoneNumber,
+  address: authValidation.address,
+  sex: authValidation.sex,
+});
 
 export const changePasswordSchema = zod
   .object({

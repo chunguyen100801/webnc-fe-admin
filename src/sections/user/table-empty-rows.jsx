@@ -16,9 +16,10 @@ export default function TableEmptyRows({ emptyRows, height }) {
         ...(height && {
           height: height * emptyRows,
         }),
+        marginY: 0,
       }}
     >
-      <TableCell colSpan={9} />
+      <TableCell sx={{ paddingY: 0 }} colSpan={9} />
     </TableRow>
   );
 }

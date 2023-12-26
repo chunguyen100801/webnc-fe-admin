@@ -10,10 +10,26 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import Iconify from 'src/components/iconify';
 import { Stack } from '@mui/material';
+import DeleteUserListModal from 'src/components/User/DeleteUserListForm';
+import { useState } from 'react';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableToolbar({ numSelected, filterName, onFilterName }) {
+export default function UserTableToolbar({
+  numSelected,
+  filterName,
+  onFilterName,
+  selected,
+  setPage,
+  setFilterName,
+  queryUserList,
+  setSelected,
+}) {
+  const [openDelListModal, setOpenDelListModal] = useState(false);
+  const [searchKey, setSearchKey] = useState(0);
+  const handleClickDelete = () => {
+    setOpenDelListModal(true);
+  };
   return (
     <Toolbar
       sx={{
@@ -30,6 +46,7 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
       }}
     >
       <OutlinedInput
+        key={searchKey}
         defaultValue={filterName === ' ' ? '' : filterName}
         onChange={onFilterName}
         placeholder="Search by name, email"
@@ -49,8 +66,8 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
             {numSelected} selected
           </Typography>
           <Tooltip title="Delete">
-            <IconButton sx={{ color: 'error.main' }}>
-              <Iconify icon="eva:trash-2-outline" width="200" />
+            <IconButton sx={{ color: 'error.main' }} onClick={handleClickDelete}>
+              <Iconify icon="eva:trash-2-outline" width={25} />
             </IconButton>
           </Tooltip>
         </Stack>
@@ -58,6 +75,16 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
         // eslint-disable-next-line react/jsx-no-useless-fragment
         <></>
       )}
+      <DeleteUserListModal
+        open={openDelListModal}
+        onClose={() => setOpenDelListModal(false)}
+        selected={selected}
+        queryUserList={queryUserList}
+        setPage={setPage}
+        setFilterName={setFilterName}
+        setSelected={setSelected}
+        setSearchKey={setSearchKey}
+      />
     </Toolbar>
   );
 }
@@ -66,4 +93,9 @@ UserTableToolbar.propTypes = {
   numSelected: PropTypes.number,
   filterName: PropTypes.string,
   onFilterName: PropTypes.func,
+  selected: PropTypes.any,
+  setPage: PropTypes.any,
+  setFilterName: PropTypes.any,
+  queryUserList: PropTypes.any,
+  setSelected: PropTypes.any,
 };

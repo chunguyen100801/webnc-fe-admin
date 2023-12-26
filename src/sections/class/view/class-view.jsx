@@ -1,6 +1,11 @@
+/* eslint-disable prefer-template */
+/* eslint-disable perfectionist/sort-imports */
+/* eslint-disable import/order */
 /* eslint-disable no-unused-vars */
 /* eslint-disable unused-imports/no-unused-imports */
-import { useState } from 'react';
+// eslint-disable-next-line perfectionist/sort-named-imports
+import { useState, useEffect, useContext, useRef } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -11,16 +16,20 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { users } from 'src/_mock/user';
+import classApi from 'src/apis/class.api';
 
 import Scrollbar from 'src/components/scrollbar';
 
 import TableNoData from '../table-no-data';
-import UserTableRow from '../class-table-row';
-import UserTableHead from '../class-table-head';
+import ClassTableRow from '../class-table-row';
+import ClassTableHead from '../class-table-head';
 import TableEmptyRows from '../table-empty-rows';
-import UserTableToolbar from '../class-table-toolbar';
+import ClassTableToolbar from '../class-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
+import { Box, Button, CircularProgress } from '@mui/material';
+import Iconify from 'src/components/iconify';
+import { debounce } from 'lodash';
+import { AppContext } from 'src/context/app.context';
 
 // ----------------------------------------------------------------------
 
@@ -31,11 +40,49 @@ export default function ClassView() {
 
   const [selected, setSelected] = useState([]);
 
-  const [orderBy, setOrderBy] = useState('name');
+  const [orderBy, setOrderBy] = useState('registrationTime');
 
-  const [filterName, setFilterName] = useState('');
+  const [filterName, setFilterName] = useState(' ');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const [toleClasses, setToleClasses] = useState(0);
+
+  // const [rowCount, setRowCount] = useState(0);
+
+  const { profile } = useContext(AppContext);
+
+  const queryClassList = {
+    order,
+    page: page + 1,
+    take: rowsPerPage,
+    search: filterName,
+  };
+
+  const classData = useQuery({
+    queryKey: ['list-classes', queryClassList],
+    queryFn: () => classApi.getListClasses(queryClassList),
+  });
+
+  const classesList = classData.data?.data?.data;
+  // console.log(classesList);
+  const classCount = classesList?.data?.length;
+
+  useEffect(() => {
+    classData.refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rowsPerPage, order, filterName, page]);
+
+  useEffect(() => {
+    if (classData.isSuccess) {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      setToleClasses(classesList?.meta?.itemCount);
+    }
+    if (classCount === 0 && page > 0) {
+      setPage(page - 1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [classData]);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -47,18 +94,18 @@ export default function ClassView() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = users.map((n) => n.name);
+      const newSelecteds = classesList?.data?.map((n) => n.id);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
+  const handleClick = (event, id) => {
+    const selectedIndex = selected.indexOf(id);
     let newSelected = [];
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
+      newSelected = newSelected.concat(selected, id);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -81,77 +128,96 @@ export default function ClassView() {
     setRowsPerPage(parseInt(event.target.value, 10));
   };
 
-  const handleFilterByName = (event) => {
+  const handleFilterByName = debounce((event) => {
+    const valueSearch = ' ' + event.target.value.trim();
     setPage(0);
-    setFilterName(event.target.value);
-  };
+    setFilterName(valueSearch);
+  }, 500);
 
   const dataFiltered = applyFilter({
-    inputData: users,
+    inputData: classesList?.data,
     comparator: getComparator(order, orderBy),
-    filterName,
+    myId: profile.id,
   });
 
-  const notFound = !dataFiltered.length && !!filterName;
+  const [openNewClassModal, setOpenNewClassModal] = useState(false);
+
+  const handleCloseNewClassModal = () => {
+    setOpenNewClassModal(false);
+  };
+
+  const notFound = !classData.isLoading && !dataFiltered?.length && filterName !== ' ';
 
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mt={3} mb={3}>
         <Typography variant="h4" className="text-blue-500">
-          Class
-        </Typography>
-        <Typography variant="h6" className="text-blue-500">
-          Total: 100
+          Classes
         </Typography>
       </Stack>
 
       <Card>
-        <UserTableToolbar
+        <ClassTableToolbar
           numSelected={selected.length}
           filterName={filterName}
           onFilterName={handleFilterByName}
         />
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            display: classData.isLoading ? 'flex' : 'none', // Hiển thị khi isLoading là true
+          }}
+        >
+          <CircularProgress />
+        </Box>
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
             <Table sx={{ minWidth: 800 }}>
-              <UserTableHead
+              <ClassTableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={users.length}
+                rowCount={classCount}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'name', label: 'Name' },
-                  { id: 'company', label: 'Company' },
-                  { id: 'role', label: 'Role' },
-                  { id: 'isVerified', label: 'Verified', align: 'center' },
-                  { id: 'status', label: 'Status' },
+                  { id: 'name', label: 'Class name' },
+                  { id: 'code', label: 'Code' },
+                  { id: 'topic', label: 'Topic' },
+                  { id: 'room', label: 'Room', align: 'center' },
+                  { id: 'creationTime', label: 'Creation time', align: 'center' },
                   { id: '' },
                 ]}
               />
+
               <TableBody>
-                {dataFiltered
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <UserTableRow
-                      key={row.id}
-                      name={row.name}
-                      role={row.role}
-                      status={row.status}
-                      company={row.company}
-                      avatarUrl={row.avatarUrl}
-                      isVerified={row.isVerified}
-                      selected={selected.indexOf(row.name) !== -1}
-                      handleClick={(event) => handleClick(event, row.name)}
-                    />
-                  ))}
+                {classData.isLoading && <TableEmptyRows height={68} emptyRows={rowsPerPage} />}
+                {dataFiltered?.map((row) => (
+                  <ClassTableRow
+                    key={row.id}
+                    id={row.id}
+                    name={row?.name}
+                    createdAt={row?.createdAt}
+                    avatar={row?.avatar}
+                    code={row?.code}
+                    topic={row?.topic}
+                    room={row?.room}
+                    description={row?.description}
+                    selected={selected.indexOf(row?.id) !== -1}
+                    handleClick={(event) => handleClick(event, row?.id)}
+                    queryClassList={queryClassList}
+                  />
+                ))}
 
-                <TableEmptyRows
-                  height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, users.length)}
-                />
-
+                {!classData.isLoading && rowsPerPage < toleClasses && (
+                  <TableEmptyRows
+                    height={68}
+                    emptyRows={emptyRows(page, rowsPerPage, classesList?.meta?.itemCount || 0)}
+                  />
+                )}
                 {notFound && <TableNoData query={filterName} />}
               </TableBody>
             </Table>
@@ -161,7 +227,7 @@ export default function ClassView() {
         <TablePagination
           page={page}
           component="div"
-          count={users.length}
+          count={classesList?.meta?.itemCount || toleClasses}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5, 10, 25]}
