@@ -74,10 +74,13 @@ export default function LoginView() {
     enabled: signinMutation.isSuccess,
     gcTime: 0,
   });
+
   useEffect(() => {
     if (getMeQuery.isSuccess) {
       const profile = getMeQuery.data.data;
+      setIsAuthenticated(true);
       setProfile(profile);
+      navigate(path.user);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getMeQuery.isSuccess]);
@@ -92,11 +95,6 @@ export default function LoginView() {
     if (signinMutation.isPending || getMeQuery.isFetching) return;
 
     signinMutation.mutate(data, {
-      onSuccess: (res) => {
-        setIsAuthenticated(true);
-        navigate(path.user);
-        getMeQuery.refetch();
-      },
       onError: (error) => {
         if (isAxiosBadRequestError(error) || isAxiosUnauthorized(error) || isAxiosNotFound(error)) {
           setError('email', {
@@ -166,7 +164,7 @@ export default function LoginView() {
         type="submit"
         variant="contained"
         color="inherit"
-        disabled={signinMutation.isPending}
+        disabled={getMeQuery.isFetching || signinMutation.isPending}
       >
         Login
       </LoadingButton>

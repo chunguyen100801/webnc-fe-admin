@@ -3,7 +3,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable unused-imports/no-unused-imports */
 /* eslint-disable prefer-template */
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Stack from '@mui/material/Stack';
@@ -22,23 +22,38 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { Button, Dialog, DialogContent, DialogTitle, Table } from '@mui/material';
 import { EditUserModal } from 'src/components/User';
+import { AppContext } from 'src/context/app.context';
+import { fDate } from 'src/utils/format-time';
+import LockUserModal from 'src/components/User/LockUser';
+import DeleteUserModal from 'src/components/User/DeleteUserForm';
 
 // ----------------------------------------------------------------------
 
 export default function UserTableRow({
+  id,
   selected,
-  name,
-  avatarUrl,
+  firstName,
+  lastName,
+  avatar,
   email,
   role,
-  isVerified,
-  status,
-  registionTime,
+  verify,
+  deleted,
+  address,
+  phoneNumber,
+  createdAt,
   handleClick,
+  sex,
+  queryUserList,
 }) {
   const [open, setOpen] = useState(null);
-  const [openModal, setOpenModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [openBanModal, setOpenBanModal] = useState(false);
+  const [openDeleteUserModal, setOpenDeleteUserModal] = useState(false);
+
   const [selectedUser, setSelectedUser] = useState(null);
+
+  const { profile } = useContext(AppContext);
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -48,65 +63,103 @@ export default function UserTableRow({
     setOpen(null);
   };
 
-  const handleCloseModal = () => {
+  const handleCloseEditModal = () => {
     setOpen(null);
-    setOpenModal(false);
+    setOpenEditModal(false);
+  };
+
+  const handleCloseBanModal = () => {
+    setOpen(null);
+    setOpenBanModal(false);
+  };
+
+  const handleCloseDeleteUserModal = () => {
+    setOpen(null);
+    setOpenDeleteUserModal(false);
   };
 
   const handleEditButtonClick = () => {
     setOpen(null);
     setSelectedUser({
-      name,
+      id,
+      firstName,
+      lastName,
+      avatar,
       email,
       role,
-      avatarUrl,
-      isVerified,
-      status,
-      registionTime,
+      verify,
+      deleted,
+      address,
+      phoneNumber,
+      createdAt,
+      sex,
     });
-    setOpenModal(true);
+    setOpenEditModal(true);
   };
+
+  const fullName = firstName + ' ' + lastName;
+
+  const handleBanButtonClick = () => {
+    setOpen(null);
+    setSelectedUser({
+      id,
+      email,
+      fullName,
+      deleted,
+    });
+    setOpenBanModal(true);
+  };
+
+  const handleDeleteButtonClick = () => {
+    setOpen(null);
+    setSelectedUser({
+      id,
+      email,
+      fullName,
+      deleted,
+    });
+    setOpenDeleteUserModal(true);
+  };
+
+  const roleCus = role === Role.ADMIN ? Role.ADMIN : Role.USER;
 
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
         <TableCell padding="checkbox">
-          <Checkbox disableRipple checked={selected} onChange={handleClick} />
+          {profile.id !== id && (
+            <Checkbox disableRipple checked={selected} onChange={handleClick} />
+          )}
         </TableCell>
-
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Avatar alt={name} src={avatarUrl}>
-              {name.charAt(0).toUpperCase()}
+            <Avatar alt={fullName} src={avatar}>
+              {fullName.charAt(0).toUpperCase()}
             </Avatar>
             <Typography variant="subtitle2" noWrap>
-              {name}
+              {fullName}
             </Typography>
           </Stack>
         </TableCell>
-
         <TableCell>{email}</TableCell>
-
-        <TableCell>{registionTime}</TableCell>
-
+        <TableCell>{fDate(createdAt)}</TableCell>
+        <TableCell>{roleCus.charAt(0).toUpperCase() + roleCus.slice(1).toLowerCase()}</TableCell>
+        <TableCell align="center">{verify === Verify.VERIFY ? 'Yes' : 'No'}</TableCell>
         <TableCell>
-          {(role || Role.USER).charAt(0).toUpperCase() + (role || Role.USER).slice(1).toLowerCase()}
-        </TableCell>
-
-        <TableCell align="center">{isVerified === Verify.VERIFY ? 'Yes' : 'No'}</TableCell>
-
-        <TableCell>
-          <Label color={(status === 'banned' && 'error') || 'success'}>
-            {(status || Status.ACTIVE).charAt(0).toUpperCase() +
-              (status || Status.ACTIVE).slice(1).toLowerCase()}
+          <Label color={(deleted === true && 'error') || 'success'}>
+            {deleted ? Status.LOCKED : Status.ACTIVE}
           </Label>
         </TableCell>
 
-        <TableCell align="right">
-          <IconButton onClick={handleOpenMenu}>
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
-        </TableCell>
+        {profile.id !== id ? (
+          <TableCell align="right">
+            <IconButton onClick={handleOpenMenu}>
+              <Iconify icon="eva:more-vertical-fill" />
+            </IconButton>
+          </TableCell>
+        ) : (
+          <TableCell height={68}> </TableCell>
+        )}
       </TableRow>
 
       <Popover
@@ -123,36 +176,64 @@ export default function UserTableRow({
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
         </MenuItem>
-        {status === Status.BLOCKED ? (
-          <MenuItem onClick={handleCloseMenu}>
-            <Iconify icon="eva:unlock-fill" sx={{ mr: 2 }} />
-            Unlock
-          </MenuItem>
-        ) : (
-          <MenuItem onClick={handleCloseMenu}>
-            <Iconify icon="eva:lock-fill" sx={{ mr: 2 }} />
-            Lock
-          </MenuItem>
-        )}
 
-        <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main' }}>
+        <MenuItem onClick={handleBanButtonClick}>
+          {deleted ? (
+            <>
+              <Iconify icon="eva:unlock-fill" sx={{ mr: 2 }} />
+              Unlock
+            </>
+          ) : (
+            <>
+              <Iconify icon="eva:lock-fill" sx={{ mr: 2 }} />
+              Lock
+            </>
+          )}
+        </MenuItem>
+
+        <MenuItem onClick={handleDeleteButtonClick} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete
         </MenuItem>
       </Popover>
-      <EditUserModal open={openModal} onClose={handleCloseModal} user={selectedUser} />
+      <EditUserModal
+        open={openEditModal}
+        onClose={handleCloseEditModal}
+        user={selectedUser}
+        queryUserList={queryUserList}
+      />
+
+      <LockUserModal
+        open={openBanModal}
+        onClose={handleCloseBanModal}
+        user={selectedUser}
+        queryUserList={queryUserList}
+      />
+
+      <DeleteUserModal
+        open={openDeleteUserModal}
+        onClose={handleCloseDeleteUserModal}
+        user={selectedUser}
+        queryUserList={queryUserList}
+      />
     </>
   );
 }
 
 UserTableRow.propTypes = {
-  avatarUrl: PropTypes.any,
+  id: PropTypes.any.isRequired,
+  avatar: PropTypes.any,
   email: PropTypes.any,
   handleClick: PropTypes.func,
-  isVerified: PropTypes.any,
-  name: PropTypes.any,
+  verify: PropTypes.any,
+  firstName: PropTypes.any,
+  lastName: PropTypes.any,
   role: PropTypes.any,
   selected: PropTypes.any,
-  status: PropTypes.string,
-  registionTime: PropTypes.any,
+  deleted: PropTypes.bool,
+  createdAt: PropTypes.any,
+  queryUserList: PropTypes.any,
+  address: PropTypes.string,
+  phoneNumber: PropTypes.string,
+  sex: PropTypes.string,
 };

@@ -3,7 +3,8 @@
 /* eslint-disable import/order */
 /* eslint-disable no-unused-vars */
 /* eslint-disable unused-imports/no-unused-imports */
-import { useState, useEffect } from 'react';
+// eslint-disable-next-line perfectionist/sort-named-imports
+import { useState, useEffect, useContext, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import Card from '@mui/material/Card';
@@ -28,10 +29,11 @@ import UserTableHead from '../user-table-head';
 import TableEmptyRows from '../table-empty-rows';
 import UserTableToolbar from '../user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
-import { Button } from '@mui/material';
+import { Box, Button, CircularProgress } from '@mui/material';
 import Iconify from 'src/components/iconify';
 import { NewUserForm } from 'src/components/User';
 import { debounce } from 'lodash';
+import { AppContext } from 'src/context/app.context';
 
 // ----------------------------------------------------------------------
 
@@ -50,6 +52,11 @@ export default function UserView() {
 
   const [toleUsers, setToleUsers] = useState(0);
 
+  // const [rowCount, setRowCount] = useState(0);
+  const rowCountRef = useRef(0);
+
+  const { profile } = useContext(AppContext);
+
   const queryUserList = {
     order,
     page: page + 1,
@@ -63,7 +70,7 @@ export default function UserView() {
   });
 
   const usersList = userData.data?.data?.data;
-  console.log(usersList);
+  const userCount = usersList?.data?.length;
 
   useEffect(() => {
     userData.refetch();
@@ -72,7 +79,12 @@ export default function UserView() {
 
   useEffect(() => {
     if (userData.isSuccess) {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      rowCountRef.current = userCount;
       setToleUsers(usersList?.meta?.itemCount);
+    }
+    if (userCount === 0 && page > 0) {
+      setPage(page - 1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData]);
@@ -87,18 +99,23 @@ export default function UserView() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = usersList?.data?.map((n) => n.email);
+      const newSelecteds = usersList?.data
+        ?.map((n) => (n.id === profile.id ? null : n.id))
+        .filter(Boolean);
       setSelected(newSelecteds);
+      if (newSelecteds.length === userCount - 1) {
+        rowCountRef.current = newSelecteds.length;
+      }
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (event, email) => {
-    const selectedIndex = selected.indexOf(email);
+  const handleClick = (event, id) => {
+    const selectedIndex = selected.indexOf(id);
     let newSelected = [];
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, email);
+      newSelected = newSelected.concat(selected, id);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -125,12 +142,12 @@ export default function UserView() {
     const valueSearch = ' ' + event.target.value.trim();
     setPage(0);
     setFilterName(valueSearch);
-    console.log(valueSearch);
   }, 500);
 
   const dataFiltered = applyFilter({
     inputData: usersList?.data,
     comparator: getComparator(order, orderBy),
+    myId: profile.id,
   });
 
   const [openNewUserModal, setOpenNewUserModal] = useState(false);
@@ -162,14 +179,30 @@ export default function UserView() {
           numSelected={selected.length}
           filterName={filterName}
           onFilterName={handleFilterByName}
+          selected={selected}
+          setPage={setPage}
+          setFilterName={setFilterName}
+          queryUserList={queryUserList}
+          setSelected={setSelected}
         />
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            display: userData.isLoading ? 'flex' : 'none', // Hiển thị khi isLoading là true
+          }}
+        >
+          <CircularProgress />
+        </Box>
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
             <Table sx={{ minWidth: 800 }}>
               <UserTableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={usersList?.data?.length || 0}
+                rowCount={rowCountRef.current}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
@@ -183,33 +216,37 @@ export default function UserView() {
                   { id: '' },
                 ]}
               />
+
               <TableBody>
+                {userData.isLoading && <TableEmptyRows height={68} emptyRows={rowsPerPage} />}
                 {dataFiltered?.map((row) => (
                   <UserTableRow
-                    key={row.id}
-                    name={`${row?.firstName} ${row?.lastName}`}
+                    key={row?.id}
+                    id={row?.id}
+                    firstName={row?.firstName}
+                    lastName={row?.lastName}
                     role={row?.role}
-                    registionTime={fDate(row?.createdAt)}
-                    status={row?.status}
+                    createdAt={row?.createdAt}
+                    deleted={row?.deleted}
                     email={row?.email}
-                    avatarUrl={row?.avatar}
-                    isVerified={row?.verify}
-                    selected={selected.indexOf(row?.email) !== -1}
-                    handleClick={(event) => handleClick(event, row?.email)}
+                    avatar={row?.avatar}
+                    verify={row?.verify}
+                    selected={selected.indexOf(row?.id) !== -1}
+                    handleClick={(event) => handleClick(event, row?.id)}
+                    address={row?.address}
+                    phoneNumber={row?.phoneNumber}
+                    sex={row?.sex}
+                    queryUserList={queryUserList}
                   />
                 ))}
-                {!notFound ? (
+
+                {!userData.isLoading && rowsPerPage < toleUsers && (
                   <TableEmptyRows
-                    height={77}
-                    emptyRows={emptyRows(
-                      page,
-                      rowsPerPage,
-                      usersList?.meta?.itemCount || toleUsers
-                    )}
+                    height={68}
+                    emptyRows={emptyRows(page, rowsPerPage, usersList?.meta?.itemCount || 0)}
                   />
-                ) : (
-                  <TableNoData query={filterName} />
                 )}
+                {notFound && <TableNoData query={filterName} />}
               </TableBody>
             </Table>
           </TableContainer>
