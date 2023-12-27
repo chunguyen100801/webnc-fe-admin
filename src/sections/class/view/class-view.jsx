@@ -65,7 +65,6 @@ export default function ClassView() {
   });
 
   const classesList = classData.data?.data?.data;
-  // console.log(classesList);
   const classCount = classesList?.data?.length;
 
   useEffect(() => {
@@ -161,6 +160,11 @@ export default function ClassView() {
           numSelected={selected.length}
           filterName={filterName}
           onFilterName={handleFilterByName}
+          selected={selected}
+          setPage={setPage}
+          setFilterName={setFilterName}
+          queryClassList={queryClassList}
+          setSelected={setSelected}
         />
         <Box
           sx={{
@@ -188,6 +192,8 @@ export default function ClassView() {
                   { id: 'code', label: 'Code' },
                   { id: 'topic', label: 'Topic' },
                   { id: 'room', label: 'Room', align: 'center' },
+                  { id: 'member', label: 'Members', align: 'center' },
+                  { id: 'owner', label: 'Owner' },
                   { id: 'creationTime', label: 'Creation time', align: 'center' },
                   { id: '' },
                 ]}
@@ -205,10 +211,13 @@ export default function ClassView() {
                     code={row?.code}
                     topic={row?.topic}
                     room={row?.room}
+                    courseTeachers={row?.courseTeachers}
+                    enrollments={row?.enrollments}
                     description={row?.description}
                     selected={selected.indexOf(row?.id) !== -1}
                     handleClick={(event) => handleClick(event, row?.id)}
                     queryClassList={queryClassList}
+                    createdBy={row?.createdBy}
                   />
                 ))}
 

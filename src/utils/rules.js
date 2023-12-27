@@ -96,4 +96,5 @@ export const classSchema = zod.object({
   description: zod.optional(zod.string().max(100, 'Maximum length is 100 characters')),
   room: zod.optional(zod.string().max(100, 'Maximum length is 100 characters')),
   topic: zod.optional(zod.string().max(100, 'Maximum length is 100 characters')),
+  avatar: zod.optional(),
 });

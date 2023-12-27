@@ -10,10 +10,26 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import Iconify from 'src/components/iconify';
 import { Stack } from '@mui/material';
+import DeleteClassListModal from 'src/components/Class/DeleteClassListModal';
+import { useState } from 'react';
 
 // ----------------------------------------------------------------------
 
-export default function ClassTableToolbar({ numSelected, filterName, onFilterName }) {
+export default function ClassTableToolbar({
+  numSelected,
+  filterName,
+  onFilterName,
+  selected,
+  setPage,
+  setFilterName,
+  queryClassList,
+  setSelected,
+}) {
+  const [openDelListModal, setOpenDelListModal] = useState(false);
+  const [searchKey, setSearchKey] = useState(0);
+  const handleClickDelete = () => {
+    setOpenDelListModal(true);
+  };
   return (
     <Toolbar
       sx={{
@@ -30,6 +46,7 @@ export default function ClassTableToolbar({ numSelected, filterName, onFilterNam
       }}
     >
       <OutlinedInput
+        key={searchKey}
         defaultValue={filterName === ' ' ? '' : filterName}
         onChange={onFilterName}
         placeholder="name, topic, room, code"
@@ -49,7 +66,7 @@ export default function ClassTableToolbar({ numSelected, filterName, onFilterNam
             {numSelected} selected
           </Typography>
           <Tooltip title="Delete">
-            <IconButton sx={{ color: 'error.main' }}>
+            <IconButton sx={{ color: 'error.main' }} onClick={handleClickDelete}>
               <Iconify icon="eva:trash-2-outline" width={25} />
             </IconButton>
           </Tooltip>
@@ -58,6 +75,16 @@ export default function ClassTableToolbar({ numSelected, filterName, onFilterNam
         // eslint-disable-next-line react/jsx-no-useless-fragment
         <></>
       )}
+      <DeleteClassListModal
+        open={openDelListModal}
+        onClose={() => setOpenDelListModal(false)}
+        selected={selected}
+        queryClassList={queryClassList}
+        setPage={setPage}
+        setFilterName={setFilterName}
+        setSelected={setSelected}
+        setSearchKey={setSearchKey}
+      />
     </Toolbar>
   );
 }
@@ -66,4 +93,9 @@ ClassTableToolbar.propTypes = {
   numSelected: PropTypes.number,
   filterName: PropTypes.string,
   onFilterName: PropTypes.func,
+  selected: PropTypes.any,
+  setPage: PropTypes.any,
+  setFilterName: PropTypes.any,
+  queryClassList: PropTypes.any,
+  setSelected: PropTypes.any,
 };

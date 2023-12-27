@@ -13,33 +13,22 @@ import {
   DialogContent,
   DialogActions,
   Stack,
-  Select,
-  FormControl,
-  InputLabel,
-  MenuItem,
   IconButton,
   Box,
   CircularProgress,
   Avatar,
 } from '@mui/material';
 // import CloseIcon from '@mui/icons-material/Close';
-import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { isAxiosUnprocessableEntityError } from 'src/utils/error';
-import { omit } from 'lodash';
-import { registerSchema, updateProfileSchema } from 'src/utils/rules';
-import authApi from 'src/apis/auth.api';
-import { Role, Sex } from 'src/constants/const';
+import { classSchema } from 'src/utils/rules';
 import { toast } from 'react-toastify';
-import { USER_MESSAGES } from 'src/constants/message';
 import { Icon } from '@iconify/react';
-import Iconify from '../iconify';
-import userApi from 'src/apis/user.api';
+import classApi from 'src/apis/class.api';
 
-const EditUserForm = ({ open, onClose, queryUserList, user }) => {
-  const navigate = useNavigate();
+const EditClassModal = ({ open, onClose, queryClassList, classes, setSelectedClass }) => {
   const queryClient = useQueryClient();
 
   const fileInputRef = useRef(null);
@@ -55,56 +44,74 @@ const EditUserForm = ({ open, onClose, queryUserList, user }) => {
     watch,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(updateProfileSchema),
+    resolver: zodResolver(classSchema),
   });
 
   useEffect(() => {
-    if (user) {
-      setValue('firstName', user.firstName);
-      setValue('lastName', user.lastName);
-      setValue('phoneNumber', user.phoneNumber);
-      setValue('address', user.address);
+    if (classes) {
+      setValue('name', classes.name);
+      setValue('description', classes.description);
+      setValue('topic', classes.topic);
+      setValue('room', classes.room);
     }
-  }, [user, setValue]);
+  }, [classes, setValue]);
 
   // eslint-disable-next-line arrow-body-style
 
   const previewAvatar = useMemo(
-    () => (fileAvatar ? URL.createObjectURL(fileAvatar) : user?.avatar),
-    [fileAvatar, user?.avatar]
+    () => (fileAvatar ? URL.createObjectURL(fileAvatar) : classes?.avatar),
+    [fileAvatar, classes?.avatar]
   );
 
-  const updateProfileMutation = useMutation({
-    mutationFn: (body) => userApi.updateUserProfile(user.id, body),
+  const updateClassMutation = useMutation({
+    mutationFn: (body) => classApi.updateClass(classes?.id, body),
   });
 
-  const onSubmit = handleSubmit((data) => {
-    data.avatar = fileAvatar;
-    if (updateProfileMutation.isPending) return;
+  const updateAvatarMutation = useMutation({
+    mutationFn: (body) => classApi.uploadAvatarClass(classes?.id, body),
+  });
 
-    updateProfileMutation.mutate(data, {
-      onSuccess: (res) => {
+  const onSubmit = handleSubmit(async (data) => {
+    if (updateClassMutation.isPending || updateAvatarMutation.isPending) return;
+    try {
+      const res = await updateClassMutation.mutateAsync(data);
+      if (!fileAvatar) {
+        await res;
         queryClient.invalidateQueries({
-          queryKey: ['list-users', queryUserList],
+          queryKey: ['list-classes', queryClassList],
         });
-        reset();
         toast.success(res.data.message);
+        reset();
         onClose();
-      },
-      onError: (error) => {
-        if (isAxiosUnprocessableEntityError(error)) {
-          const formError = error.response?.data.message;
-          if (formError) {
-            formError.forEach((err) => {
-              setError(err.fieldName, {
-                message: err.errorMessage,
-                type: 'server',
-              });
+        return;
+      }
+      const bodyAvatar = {
+        avatar: fileAvatar,
+      };
+      const avatarRes = await updateAvatarMutation.mutateAsync(bodyAvatar);
+
+      await Promise.all([avatarRes, res]);
+
+      queryClient.invalidateQueries({
+        queryKey: ['list-classes', queryClassList],
+      });
+      reset();
+      toast.success(res.data.message);
+      onClose();
+      setSelectedClass(null);
+    } catch (error) {
+      if (isAxiosUnprocessableEntityError(error)) {
+        const formError = error.response?.data.message;
+        if (formError) {
+          formError.forEach((err) => {
+            setError(err.fieldName, {
+              message: err.errorMessage,
+              type: 'server',
             });
-          }
+          });
         }
-      },
-    });
+      }
+    }
   });
 
   const onFileChange = (e) => {
@@ -136,7 +143,8 @@ const EditUserForm = ({ open, onClose, queryUserList, user }) => {
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          display: updateProfileMutation.isPending ? 'flex' : 'none', // Hiển thị khi isLoading là true
+          display:
+            updateClassMutation.isPending || updateAvatarMutation.isPending ? 'flex' : 'none', // Hiển thị khi isLoading là true
         }}
       >
         <CircularProgress />
@@ -150,79 +158,69 @@ const EditUserForm = ({ open, onClose, queryUserList, user }) => {
           marginY: 2,
         }}
       >
-        {user?.email}
+        Code: {classes?.code}
         <IconButton onClick={onClose} color="inherit" size="small">
           <Icon icon="material-symbols:close" width="25" />
         </IconButton>
       </DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ marginTop: 1 }}>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
-            <div>
-              <TextField
-                disabled={updateProfileMutation.isPending}
-                label="First Name"
-                name="firstName"
-                fullWidth
-                {...register('firstName')}
-              />
-              <p className="ml-1 flex min-h-[20px] items-center gap-1 text-xs font-normal text-red-400">
-                {errors.firstName?.message}
-              </p>
-            </div>
-            <div>
-              {' '}
-              <TextField
-                disabled={updateProfileMutation.isPending}
-                label="Last Name"
-                name="lastName"
-                fullWidth
-                {...register('lastName')}
-              />
-              <p className="ml-1 flex min-h-[20px] items-center gap-1 text-xs font-normal text-red-400">
-                {errors.lastName?.message}
-              </p>
-            </div>
-          </Stack>
-          <FormControl fullWidth>
-            <InputLabel id="sex-label">Sex</InputLabel>
-            <Select
-              disabled={updateProfileMutation.isPending}
-              labelId="sex-label"
-              label="Sex"
-              {...register('sex')}
-              defaultValue={user?.sex}
-            >
-              <MenuItem value={Sex.NONE}>None</MenuItem>
-              <MenuItem value={Sex.MALE}>Male</MenuItem>
-              <MenuItem value={Sex.FEMALE}>Female</MenuItem>
-            </Select>
-          </FormControl>
           <div>
             {' '}
             <TextField
-              disabled={updateProfileMutation.isPending}
-              label="Phone Number"
-              name="phoneNumber"
+              disabled={updateClassMutation.isPending || updateAvatarMutation.isPending}
+              label="Class name"
+              name="name"
               fullWidth
-              {...register('phoneNumber')}
+              {...register('name')}
             />
             <p className="ml-1 flex min-h-[20px] items-center gap-1 text-xs font-normal text-red-400">
-              {errors.phoneNumber?.message}
+              {errors.name?.message}
             </p>
           </div>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+            <div style={{ flex: 2 }}>
+              <TextField
+                disabled={updateClassMutation.isPending || updateAvatarMutation.isPending}
+                label="Topic"
+                name="topic"
+                fullWidth
+                {...register('topic')}
+                sx={{ flex: 2 }}
+              />
+              <p className="ml-1 flex min-h-[20px] items-center gap-1 text-xs font-normal text-red-400">
+                {errors.topic?.message}
+              </p>
+            </div>
+            <div style={{ flex: 1 }}>
+              {' '}
+              <TextField
+                disabled={updateClassMutation.isPending || updateAvatarMutation.isPending}
+                label="Room"
+                name="room"
+                fullWidth
+                {...register('room')}
+                sx={{ flex: 1 }}
+              />
+              <p className="ml-1 flex min-h-[20px] items-center gap-1 text-xs font-normal text-red-400">
+                {errors.room?.message}
+              </p>
+            </div>
+          </Stack>
           <div>
+            {' '}
             <TextField
-              disabled={updateProfileMutation.isPending}
-              name="address"
-              label="Address"
+              disabled={updateClassMutation.isPending || updateAvatarMutation.isPending}
+              label="Description"
+              name="description"
               fullWidth
-              {...register('address')}
+              {...register('description')}
             />
             <p className="ml-1 flex min-h-[20px] items-center gap-1 text-xs font-normal text-red-400">
-              {errors.address?.message}
+              {errors.description?.message}
             </p>
           </div>
+
           <Stack direction={{ xs: 'column', sm: 'row' }} alignItems="center" textAlign="center">
             <Avatar
               src={previewAvatar || ''}
@@ -239,7 +237,7 @@ const EditUserForm = ({ open, onClose, queryUserList, user }) => {
                 border: (theme) => `solid 2px ${theme.palette.background.default}`,
               }}
             >
-              {user?.firstName?.charAt(0).toUpperCase()}
+              {classes?.firstName?.charAt(0).toUpperCase()}
             </Avatar>
             <input
               {...register('avatar')}
@@ -248,7 +246,7 @@ const EditUserForm = ({ open, onClose, queryUserList, user }) => {
               accept=".jpg, .jpeg, .png"
               ref={fileInputRef}
               onChange={onFileChange}
-              disabled={updateProfileMutation.isPending}
+              disabled={updateClassMutation.isPending || updateAvatarMutation.isPending}
             />
             <Stack
               sx={{
@@ -263,7 +261,7 @@ const EditUserForm = ({ open, onClose, queryUserList, user }) => {
                 variant="outlined"
                 color="primary"
                 onClick={handleChooseAvatar}
-                disabled={updateProfileMutation.isPending}
+                disabled={updateClassMutation.isPending || updateAvatarMutation.isPending}
               >
                 Choose Avatar
               </Button>
@@ -274,23 +272,30 @@ const EditUserForm = ({ open, onClose, queryUserList, user }) => {
         </Stack>
       </DialogContent>
       <DialogActions sx={{ marginBottom: 2 }}>
-        <Button onClick={onClose} disabled={updateProfileMutation.isPending}>
+        <Button
+          onClick={onClose}
+          disabled={updateClassMutation.isPending || updateAvatarMutation.isPending}
+        >
           Cancel
         </Button>
-        <Button onClick={onSubmit} disabled={updateProfileMutation.isPending} color="primary">
-          Update User
+        <Button
+          onClick={onSubmit}
+          disabled={updateClassMutation.isPending || updateAvatarMutation.isPending}
+          color="primary"
+        >
+          Update Class
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
 
-EditUserForm.propTypes = {
+EditClassModal.propTypes = {
   open: PropTypes.any,
   onClose: PropTypes.any,
-  queryUserList: PropTypes.any,
-  user: PropTypes.any,
-  setUser: PropTypes.any,
+  queryClassList: PropTypes.any,
+  classes: PropTypes.any,
+  setSelectedClass: PropTypes.any,
 };
 
-export default EditUserForm;
+export default EditClassModal;

@@ -24,6 +24,8 @@ import { Button, Dialog, DialogContent, DialogTitle, Table } from '@mui/material
 // import { EditClassModal } from 'src/components/Class';
 import { AppContext } from 'src/context/app.context';
 import { fDate } from 'src/utils/format-time';
+import { EditClassModal } from 'src/components/Class';
+import DeleteClassModal from 'src/components/Class/DeleteClassModal';
 // import LockClassModal from 'src/components/Class/LockClass';
 // import DeleteClassModal from 'src/components/Class/DeleteClassForm';
 
@@ -41,6 +43,9 @@ export default function ClassTableRow({
   selected,
   handleClick,
   queryClassList,
+  courseTeachers,
+  enrollments,
+  createdBy,
 }) {
   const [open, setOpen] = useState(null);
   const [openEditModal, setOpenEditModal] = useState(false);
@@ -76,21 +81,34 @@ export default function ClassTableRow({
 
   const handleEditButtonClick = () => {
     setOpen(null);
-    setSelectedClass({});
+    setSelectedClass({
+      id,
+      name,
+      createdAt,
+      avatar,
+      code,
+      topic,
+      room,
+      description,
+      courseTeachers,
+      enrollments,
+      createdBy,
+    });
     setOpenEditModal(true);
-  };
-
-  const handleBanButtonClick = () => {
-    setOpen(null);
-    setSelectedClass({});
-    setOpenBanModal(true);
   };
 
   const handleDeleteButtonClick = () => {
     setOpen(null);
-    setSelectedClass({});
+    setSelectedClass({
+      id,
+      name,
+      code,
+    });
     setOpenDeleteClassModal(true);
   };
+
+  // eslint-disable-next-line no-unsafe-optional-chaining
+  const memberTotal = courseTeachers?.length + enrollments?.length;
 
   return (
     <>
@@ -111,6 +129,8 @@ export default function ClassTableRow({
         <TableCell>{code}</TableCell>
         <TableCell>{topic}</TableCell>
         <TableCell align="center">{room}</TableCell>
+        <TableCell align="center">{memberTotal}</TableCell>
+        <TableCell>{createdBy?.email}</TableCell>
         <TableCell align="center">{fDate(createdAt)}</TableCell>
 
         <TableCell align="right">
@@ -135,8 +155,8 @@ export default function ClassTableRow({
           Edit
         </MenuItem>
 
-        <MenuItem onClick={handleBanButtonClick}>
-          <Iconify icon="eva:unlock-fill" sx={{ mr: 2 }} />
+        <MenuItem>
+          <Iconify icon="tdesign:member" sx={{ mr: 2 }} />
           Members
         </MenuItem>
 
@@ -145,13 +165,23 @@ export default function ClassTableRow({
           Delete
         </MenuItem>
       </Popover>
-      {/* <EditClassModal
+      <EditClassModal
         open={openEditModal}
         onClose={handleCloseEditModal}
-        class={selectedClass}
+        classes={selectedClass}
         queryClassList={queryClassList}
+        setSelectedClass={setSelectedClass}
       />
 
+      <DeleteClassModal
+        open={openDeleteClassModal}
+        onClose={handleCloseDeleteClassModal}
+        classes={selectedClass}
+        queryClassList={queryClassList}
+        setSelectedClass={setSelectedClass}
+      />
+
+      {/* 
       <LockClassModal
         open={openBanModal}
         onClose={handleCloseBanModal}
@@ -159,12 +189,7 @@ export default function ClassTableRow({
         queryClassList={queryClassList}
       />
 
-      <DeleteClassModal
-        open={openDeleteClassModal}
-        onClose={handleCloseDeleteClassModal}
-        class={selectedClass}
-        queryClassList={queryClassList}
-      /> */}
+*/}
     </>
   );
 }
@@ -181,4 +206,7 @@ ClassTableRow.propTypes = {
   selected: PropTypes.any,
   handleClick: PropTypes.any,
   queryClassList: PropTypes.any,
+  courseTeachers: PropTypes.any,
+  enrollments: PropTypes.any,
+  createdBy: PropTypes.any,
 };

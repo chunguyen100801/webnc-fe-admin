@@ -25,4 +25,7 @@ export const userApiPath = {
 
 export const classApiPath = {
   getListClasses: PREFIX_CLASS,
+  updateClass: PREFIX_CLASS,
+  uploadAvatarClass: PREFIX_CLASS,
+  deleteClass: PREFIX_CLASS,
 };
