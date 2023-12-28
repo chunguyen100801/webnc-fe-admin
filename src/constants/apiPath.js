@@ -1,6 +1,7 @@
 /* eslint-disable prefer-template */
 const PREFIX_AUTH = 'auth/';
 const PREFIX_USER = 'users/';
+const PREFIX_CLASS = 'courses/';
 
 export const authApiPath = {
   signin: PREFIX_AUTH + 'login',
@@ -16,4 +17,12 @@ export const userApiPath = {
   changePassword: PREFIX_USER + 'change-password',
   forgotPassword: PREFIX_USER + 'forgot-password',
   resetPassword: PREFIX_USER + 'reset-password',
+  updateUserProfile: PREFIX_USER,
+  lockUser: PREFIX_USER,
+  unlockUser: PREFIX_USER,
+  deleteUser: PREFIX_USER,
+};
+
+export const classApiPath = {
+  getListClasses: PREFIX_CLASS,
 };
