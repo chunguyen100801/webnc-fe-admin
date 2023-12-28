@@ -54,7 +54,6 @@ export default function MemberView() {
   });
 
   const membersList = memberData.data?.data?.data[0];
-  console.log(membersList);
   const createdById = membersList?.createdById;
 
   const handleFilterByName = debounce((event) => {

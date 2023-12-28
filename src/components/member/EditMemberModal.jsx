@@ -32,7 +32,6 @@ import { useParams } from 'react-router-dom';
 const EditMemberModal = ({ open, onClose, member, setSelectedMember }) => {
   const queryClient = useQueryClient();
   const params = useParams();
-  console.log(member);
 
   const classId = params?.classId;
   const {
