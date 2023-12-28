@@ -34,13 +34,15 @@ import { debounce } from 'lodash';
 import { AppContext } from 'src/context/app.context';
 import MemberTableToolbar from '../member-table-toolbar';
 import TableEmptyRows from '../../table-empty-rows';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Role } from 'src/constants/const';
+import path from 'src/constants/path';
 
 // ----------------------------------------------------------------------
 
 export default function MemberView() {
   const params = useParams();
+  const navigate = useNavigate();
 
   const classId = params?.classId;
 
@@ -55,6 +57,13 @@ export default function MemberView() {
 
   const membersList = memberData.data?.data?.data[0];
   const createdById = membersList?.createdById;
+
+  useEffect(() => {
+    if (memberData.isError) {
+      navigate(path.class);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [memberData]);
 
   const handleFilterByName = debounce((event) => {
     const valueSearch = ' ' + event.target.value.trim();
