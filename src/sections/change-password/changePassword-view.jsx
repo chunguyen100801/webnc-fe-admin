@@ -47,10 +47,10 @@ export default function ChangePasswordView() {
     mutationFn: (body) => userApi.changePassword(body),
   });
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = handleSubmit((data) => {
     if (changePasswordMutation.isPending) return;
 
-    changePasswordMutation.mutateAsync(data, {
+    changePasswordMutation.mutate(data, {
       onSuccess: (res) => {
         toast.success(res.data?.message);
         router.push(path.user);

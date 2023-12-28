@@ -8,6 +8,7 @@ import { Outlet, Navigate, useRoutes } from 'react-router-dom';
 import path from 'src/constants/path';
 import DashboardLayout from 'src/layouts/dashboard';
 import ResetPasswordPage from 'src/pages/reset-password';
+import MemberPage from 'src/pages/member';
 
 export const UserPage = lazy(() => import('src/pages/user'));
 export const LoginPage = lazy(() => import('src/pages/login'));
@@ -47,6 +48,7 @@ export default function Router() {
             { element: <Navigate to={path.user} replace />, index: true },
             { path: path.user, element: <UserPage /> },
             { path: path.class, element: <ClassPage /> },
+            { path: path.classDetail, element: <MemberPage /> },
             { path: path.change_password, element: <ChangePasswordPage /> },
           ],
         },

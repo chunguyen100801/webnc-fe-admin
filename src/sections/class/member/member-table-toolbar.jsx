@@ -1,35 +1,31 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable perfectionist/sort-imports */
 import PropTypes from 'prop-types';
 
-import Tooltip from '@mui/material/Tooltip';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
+// import Typography from '@mui/material/Typography';
+// import IconButton from '@mui/material/IconButton';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import Iconify from 'src/components/iconify';
-import { Stack } from '@mui/material';
-import DeleteClassListModal from 'src/components/Class/DeleteClassListModal';
+// import { Stack } from '@mui/material';
 import { useState } from 'react';
 
 // ----------------------------------------------------------------------
 
-export default function ClassTableToolbar({
+export default function MemberTableToolbar({
   numSelected,
   filterName,
   onFilterName,
   selected,
   setPage,
   setFilterName,
-  queryClassList,
+  queryMemberList,
   setSelected,
 }) {
-  const [openDelListModal, setOpenDelListModal] = useState(false);
   const [searchKey, setSearchKey] = useState(0);
-  const handleClickDelete = () => {
-    setOpenDelListModal(true);
-  };
+
   return (
     <Toolbar
       sx={{
@@ -49,7 +45,7 @@ export default function ClassTableToolbar({
         key={searchKey}
         defaultValue={filterName === ' ' ? '' : filterName}
         onChange={onFilterName}
-        placeholder="name, topic, room, code"
+        placeholder="Search by name, email"
         startAdornment={
           <InputAdornment position="start">
             <Iconify
@@ -59,43 +55,17 @@ export default function ClassTableToolbar({
           </InputAdornment>
         }
       />
-
-      {numSelected > 0 ? (
-        <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
-          <Typography component="div" variant="subtitle1" sx={{ verticalAlign: 'middle' }}>
-            {numSelected} selected
-          </Typography>
-          <Tooltip title="Delete">
-            <IconButton sx={{ color: 'error.main' }} onClick={handleClickDelete}>
-              <Iconify icon="eva:trash-2-outline" width={25} />
-            </IconButton>
-          </Tooltip>
-        </Stack>
-      ) : (
-        // eslint-disable-next-line react/jsx-no-useless-fragment
-        <></>
-      )}
-      <DeleteClassListModal
-        open={openDelListModal}
-        onClose={() => setOpenDelListModal(false)}
-        selected={selected}
-        queryClassList={queryClassList}
-        setPage={setPage}
-        setFilterName={setFilterName}
-        setSelected={setSelected}
-        setSearchKey={setSearchKey}
-      />
     </Toolbar>
   );
 }
 
-ClassTableToolbar.propTypes = {
+MemberTableToolbar.propTypes = {
   numSelected: PropTypes.number,
   filterName: PropTypes.string,
   onFilterName: PropTypes.func,
   selected: PropTypes.any,
   setPage: PropTypes.any,
   setFilterName: PropTypes.any,
-  queryClassList: PropTypes.any,
+  queryMemberList: PropTypes.any,
   setSelected: PropTypes.any,
 };
