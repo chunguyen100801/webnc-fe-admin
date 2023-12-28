@@ -83,8 +83,8 @@ const EditUserForm = ({ open, onClose, queryUserList, user }) => {
     if (updateProfileMutation.isPending) return;
 
     updateProfileMutation.mutate(data, {
-      onSuccess: (res) => {
-        queryClient.invalidateQueries({
+      onSuccess: async (res) => {
+        await queryClient.invalidateQueries({
           queryKey: ['list-users', queryUserList],
         });
         reset();

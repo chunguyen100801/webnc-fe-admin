@@ -60,8 +60,8 @@ const NewUserForm = ({ open, onClose, order, page, rowsPerPage }) => {
     const body = omit(data, ['confirmPassword']);
     body.role = body.role === Role.ADMIN ? Role.ADMIN : Role.STUDENT;
     signupMutation.mutate(body, {
-      onSuccess: (res) => {
-        queryClient.invalidateQueries({
+      onSuccess: async (res) => {
+        await queryClient.invalidateQueries({
           queryKey: ['list-users', { order, page: page + 1, take: rowsPerPage }],
         });
         reset();
