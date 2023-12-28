@@ -27,7 +27,6 @@ import TableEmptyRows from '../table-empty-rows';
 import ClassTableToolbar from '../class-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 import { Box, Button, CircularProgress } from '@mui/material';
-import Iconify from 'src/components/iconify';
 import { debounce } from 'lodash';
 import { AppContext } from 'src/context/app.context';
 

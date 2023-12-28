@@ -16,9 +16,6 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { fDate } from 'src/utils/format-time';
-
-import { users } from 'src/_mock/user';
 import userApi from 'src/apis/user.api';
 
 import Scrollbar from 'src/components/scrollbar';

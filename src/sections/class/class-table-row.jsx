@@ -3,7 +3,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable unused-imports/no-unused-imports */
 /* eslint-disable prefer-template */
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Stack from '@mui/material/Stack';
@@ -16,16 +16,13 @@ import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
-import { Role, Status, Verify } from 'src/constants/const';
-
-import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
-import { Button, Dialog, DialogContent, DialogTitle, Table } from '@mui/material';
 // import { EditClassModal } from 'src/components/Class';
-import { AppContext } from 'src/context/app.context';
 import { fDate } from 'src/utils/format-time';
 import { EditClassModal } from 'src/components/Class';
 import DeleteClassModal from 'src/components/Class/DeleteClassModal';
+import { RouterLink } from 'src/routes/components';
+import path from 'src/constants/path';
 // import LockClassModal from 'src/components/Class/LockClass';
 // import DeleteClassModal from 'src/components/Class/DeleteClassForm';
 
@@ -49,12 +46,9 @@ export default function ClassTableRow({
 }) {
   const [open, setOpen] = useState(null);
   const [openEditModal, setOpenEditModal] = useState(false);
-  const [openBanModal, setOpenBanModal] = useState(false);
   const [openDeleteClassModal, setOpenDeleteClassModal] = useState(false);
 
   const [selectedClass, setSelectedClass] = useState(null);
-
-  const { profile } = useContext(AppContext);
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -67,11 +61,6 @@ export default function ClassTableRow({
   const handleCloseEditModal = () => {
     setOpen(null);
     setOpenEditModal(false);
-  };
-
-  const handleCloseBanModal = () => {
-    setOpen(null);
-    setOpenBanModal(false);
   };
 
   const handleCloseDeleteClassModal = () => {
@@ -155,10 +144,12 @@ export default function ClassTableRow({
           Edit
         </MenuItem>
 
-        <MenuItem>
-          <Iconify icon="tdesign:member" sx={{ mr: 2 }} />
-          Members
-        </MenuItem>
+        <RouterLink to={`${path.class}/${id}`} className="w-full">
+          <MenuItem>
+            <Iconify icon="tdesign:member" sx={{ mr: 2 }} onClick={() => setOpen(false)} />
+            Members
+          </MenuItem>
+        </RouterLink>
 
         <MenuItem onClick={handleDeleteButtonClick} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
@@ -180,16 +171,6 @@ export default function ClassTableRow({
         queryClassList={queryClassList}
         setSelectedClass={setSelectedClass}
       />
-
-      {/* 
-      <LockClassModal
-        open={openBanModal}
-        onClose={handleCloseBanModal}
-        class={selectedClass}
-        queryClassList={queryClassList}
-      />
-
-*/}
     </>
   );
 }

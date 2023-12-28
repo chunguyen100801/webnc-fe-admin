@@ -98,3 +98,7 @@ export const classSchema = zod.object({
   topic: zod.optional(zod.string().max(100, 'Maximum length is 100 characters')),
   avatar: zod.optional(),
 });
+
+export const memberSchema = zod.object({
+  studentId: zod.string().max(20, 'Maximum length is 20 characters'),
+});

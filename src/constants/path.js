@@ -11,6 +11,7 @@ const path = {
   resetPassword: adminPrefix + '/reset-password',
   notFound: adminPrefix + '/not-found',
   class: adminPrefix + '/class',
+  classDetail: adminPrefix + '/class/:classId',
 };
 
 export default path;
