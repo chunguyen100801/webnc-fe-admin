@@ -100,5 +100,5 @@ export const classSchema = zod.object({
 });
 
 export const memberSchema = zod.object({
-  studentId: zod.string().max(20, 'Maximum length is 20 characters'),
+  studentId: zod.string().min(1, 'Student Id is required').max(20, 'Maximum length is 20 characters'),
 });
