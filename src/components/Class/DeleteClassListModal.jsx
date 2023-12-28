@@ -42,8 +42,8 @@ const DeleteClassListModal = ({
 
   const onConfirmDelete = () => {
     deleteClassListMutation.mutate(null, {
-      onSuccess: (res) => {
-        queryClient.invalidateQueries({ queryKey: ['list-classes', queryClassListReset] });
+      onSuccess: async (res) => {
+        await queryClient.invalidateQueries({ queryKey: ['list-classes', queryClassListReset] });
         setSelected([]);
         setSearchKey((prevKey) => prevKey + 1);
         setFilterName(' ');

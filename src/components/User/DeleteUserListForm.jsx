@@ -43,8 +43,8 @@ const DeleteUserListModal = ({
 
   const onConfirmDelete = () => {
     deleteUserListMutation.mutate(null, {
-      onSuccess: (res) => {
-        queryClient.invalidateQueries({ queryKey: ['list-users', queryUserListReset] });
+      onSuccess: async (res) => {
+        await queryClient.invalidateQueries({ queryKey: ['list-users', queryUserListReset] });
         setSelected([]);
         setSearchKey((prevKey) => prevKey + 1);
         setFilterName(' ');

@@ -77,7 +77,7 @@ const EditClassModal = ({ open, onClose, queryClassList, classes, setSelectedCla
       const res = await updateClassMutation.mutateAsync(data);
       if (!fileAvatar) {
         await res;
-        queryClient.invalidateQueries({
+        await queryClient.invalidateQueries({
           queryKey: ['list-classes', queryClassList],
         });
         toast.success(res.data.message);
@@ -92,7 +92,7 @@ const EditClassModal = ({ open, onClose, queryClassList, classes, setSelectedCla
 
       await Promise.all([avatarRes, res]);
 
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: ['list-classes', queryClassList],
       });
       reset();

@@ -63,8 +63,8 @@ const EditMemberModal = ({ open, onClose, member, setSelectedMember }) => {
   const onClickMap = handleSubmit((data) => {
     if (mapStudenIdMutation.isPending || unmapStudenIdMutation.isPending) return;
     mapStudenIdMutation.mutate(data, {
-      onSuccess: (res) => {
-        queryClient.invalidateQueries({
+      onSuccess: async (res) => {
+        await queryClient.invalidateQueries({
           queryKey: ['list-member'],
         });
         reset();
@@ -78,8 +78,8 @@ const EditMemberModal = ({ open, onClose, member, setSelectedMember }) => {
   const onClickUnmap = handleSubmit((data) => {
     if (mapStudenIdMutation.isPending || unmapStudenIdMutation.isPending) return;
     unmapStudenIdMutation.mutate(data, {
-      onSuccess: (res) => {
-        queryClient.invalidateQueries({
+      onSuccess: async (res) => {
+        await queryClient.invalidateQueries({
           queryKey: ['list-member'],
         });
         reset();
