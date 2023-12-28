@@ -3,7 +3,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable unused-imports/no-unused-imports */
 /* eslint-disable prefer-template */
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Stack from '@mui/material/Stack';
@@ -16,14 +16,13 @@ import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
-import { Role, Status, Verify } from 'src/constants/const';
-
-import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
-import { Button, Dialog, DialogContent, DialogTitle, Table } from '@mui/material';
 // import { EditClassModal } from 'src/components/Class';
-import { AppContext } from 'src/context/app.context';
 import { fDate } from 'src/utils/format-time';
+import { EditClassModal } from 'src/components/Class';
+import DeleteClassModal from 'src/components/Class/DeleteClassModal';
+import { RouterLink } from 'src/routes/components';
+import path from 'src/constants/path';
 // import LockClassModal from 'src/components/Class/LockClass';
 // import DeleteClassModal from 'src/components/Class/DeleteClassForm';
 
@@ -41,15 +40,15 @@ export default function ClassTableRow({
   selected,
   handleClick,
   queryClassList,
+  courseTeachers,
+  enrollments,
+  createdBy,
 }) {
   const [open, setOpen] = useState(null);
   const [openEditModal, setOpenEditModal] = useState(false);
-  const [openBanModal, setOpenBanModal] = useState(false);
   const [openDeleteClassModal, setOpenDeleteClassModal] = useState(false);
 
   const [selectedClass, setSelectedClass] = useState(null);
-
-  const { profile } = useContext(AppContext);
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -64,11 +63,6 @@ export default function ClassTableRow({
     setOpenEditModal(false);
   };
 
-  const handleCloseBanModal = () => {
-    setOpen(null);
-    setOpenBanModal(false);
-  };
-
   const handleCloseDeleteClassModal = () => {
     setOpen(null);
     setOpenDeleteClassModal(false);
@@ -76,21 +70,34 @@ export default function ClassTableRow({
 
   const handleEditButtonClick = () => {
     setOpen(null);
-    setSelectedClass({});
+    setSelectedClass({
+      id,
+      name,
+      createdAt,
+      avatar,
+      code,
+      topic,
+      room,
+      description,
+      courseTeachers,
+      enrollments,
+      createdBy,
+    });
     setOpenEditModal(true);
-  };
-
-  const handleBanButtonClick = () => {
-    setOpen(null);
-    setSelectedClass({});
-    setOpenBanModal(true);
   };
 
   const handleDeleteButtonClick = () => {
     setOpen(null);
-    setSelectedClass({});
+    setSelectedClass({
+      id,
+      name,
+      code,
+    });
     setOpenDeleteClassModal(true);
   };
+
+  // eslint-disable-next-line no-unsafe-optional-chaining
+  const memberTotal = courseTeachers?.length + enrollments?.length;
 
   return (
     <>
@@ -111,6 +118,8 @@ export default function ClassTableRow({
         <TableCell>{code}</TableCell>
         <TableCell>{topic}</TableCell>
         <TableCell align="center">{room}</TableCell>
+        <TableCell align="center">{memberTotal}</TableCell>
+        <TableCell>{createdBy?.email}</TableCell>
         <TableCell align="center">{fDate(createdAt)}</TableCell>
 
         <TableCell align="right">
@@ -135,36 +144,33 @@ export default function ClassTableRow({
           Edit
         </MenuItem>
 
-        <MenuItem onClick={handleBanButtonClick}>
-          <Iconify icon="eva:unlock-fill" sx={{ mr: 2 }} />
-          Members
-        </MenuItem>
+        <RouterLink to={`${path.class}/${id}`} className="w-full">
+          <MenuItem>
+            <Iconify icon="tdesign:member" sx={{ mr: 2 }} onClick={() => setOpen(false)} />
+            Members
+          </MenuItem>
+        </RouterLink>
 
         <MenuItem onClick={handleDeleteButtonClick} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete
         </MenuItem>
       </Popover>
-      {/* <EditClassModal
+      <EditClassModal
         open={openEditModal}
         onClose={handleCloseEditModal}
-        class={selectedClass}
+        classes={selectedClass}
         queryClassList={queryClassList}
-      />
-
-      <LockClassModal
-        open={openBanModal}
-        onClose={handleCloseBanModal}
-        class={selectedClass}
-        queryClassList={queryClassList}
+        setSelectedClass={setSelectedClass}
       />
 
       <DeleteClassModal
         open={openDeleteClassModal}
         onClose={handleCloseDeleteClassModal}
-        class={selectedClass}
+        classes={selectedClass}
         queryClassList={queryClassList}
-      /> */}
+        setSelectedClass={setSelectedClass}
+      />
     </>
   );
 }
@@ -181,4 +187,7 @@ ClassTableRow.propTypes = {
   selected: PropTypes.any,
   handleClick: PropTypes.any,
   queryClassList: PropTypes.any,
+  courseTeachers: PropTypes.any,
+  enrollments: PropTypes.any,
+  createdBy: PropTypes.any,
 };
