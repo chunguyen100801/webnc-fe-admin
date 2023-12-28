@@ -31,8 +31,8 @@ const LockUserModal = ({ open, onClose, user, queryUserList }) => {
   });
   const onConfirmUnlock = () => {
     unlockUserMutation.mutate(null, {
-      onSuccess: (res) => {
-        queryClient.invalidateQueries({ queryKey: ['list-users', queryUserList] });
+      onSuccess: async (res) => {
+        await queryClient.invalidateQueries({ queryKey: ['list-users', queryUserList] });
         toast.success(res.data.message);
         onClose();
       },
@@ -41,8 +41,8 @@ const LockUserModal = ({ open, onClose, user, queryUserList }) => {
 
   const onConfirmLock = () => {
     lockUserMutation.mutate(null, {
-      onSuccess: (res) => {
-        queryClient.invalidateQueries({ queryKey: ['list-users', queryUserList] });
+      onSuccess: async (res) => {
+        await queryClient.invalidateQueries({ queryKey: ['list-users', queryUserList] });
         toast.success(res.data.message);
         onClose();
       },

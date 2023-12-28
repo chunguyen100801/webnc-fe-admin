@@ -27,8 +27,8 @@ const DeleteUserModal = ({ open, onClose, user, queryUserList }) => {
 
   const onConfirmDelete = () => {
     deleteUserMutation.mutate(null, {
-      onSuccess: (res) => {
-        queryClient.invalidateQueries({ queryKey: ['list-users'] });
+      onSuccess: async (res) => {
+        await queryClient.invalidateQueries({ queryKey: ['list-users'] });
         toast.success(res.data.message);
         onClose();
       },

@@ -26,8 +26,8 @@ const DeleteClassModal = ({ open, onClose, classes, queryClassList, setSelectedC
 
   const onConfirmDelete = () => {
     deleteClassMutation.mutate(null, {
-      onSuccess: (res) => {
-        queryClient.invalidateQueries({ queryKey: ['list-classes'] });
+      onSuccess: async (res) => {
+        await queryClient.invalidateQueries({ queryKey: ['list-classes'] });
         setSelectedClass(null);
         toast.success(res.data.message);
         onClose();
