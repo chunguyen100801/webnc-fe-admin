@@ -8,20 +8,19 @@ import PropTypes from 'prop-types';
 
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
-import Popover from '@mui/material/Popover';
+// import Popover from '@mui/material/Popover';
 import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
-import MenuItem from '@mui/material/MenuItem';
+// import Checkbox from '@mui/material/Checkbox';
+// import MenuItem from '@mui/material/MenuItem';
 import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
+// import IconButton from '@mui/material/IconButton';
 
 import { Role, Status, Verify } from 'src/constants/const';
 
-import Label from 'src/components/label';
-import Iconify from 'src/components/iconify';
+// import Label from 'src/components/label';
+// import Iconify from 'src/components/iconify';
 import { Button, Dialog, DialogContent, DialogTitle, Table } from '@mui/material';
-import { EditMemberModal } from 'src/components/member';
 import { AppContext } from 'src/context/app.context';
 import { fDate } from 'src/utils/format-time';
 
@@ -39,45 +38,45 @@ export default function MemberTableRow({
   createdById,
   studentId,
 }) {
-  const [open, setOpen] = useState(null);
-  const [openEditModal, setOpenEditModal] = useState(false);
+  // const [open, setOpen] = useState(null);
+  // const [openEditModal, setOpenEditModal] = useState(false);
 
-  const [selectedMember, setSelectedMember] = useState(null);
+  // const [selectedMember, setSelectedMember] = useState(null);
 
-  const { profile } = useContext(AppContext);
+  // const { profile } = useContext(AppContext);
 
-  const handleOpenMenu = (event) => {
-    setOpen(event.currentTarget);
-  };
+  // const handleOpenMenu = (event) => {
+  //   setOpen(event.currentTarget);
+  // };
 
-  const handleCloseMenu = () => {
-    setOpen(null);
-  };
+  // const handleCloseMenu = () => {
+  //   setOpen(null);
+  // };
 
-  const handleCloseEditModal = () => {
-    setOpen(null);
-    setOpenEditModal(false);
-  };
+  // const handleCloseEditModal = () => {
+  //   setOpen(null);
+  //   // setOpenEditModal(false);
+  // };
 
-  const handleEditButtonClick = () => {
-    setOpen(null);
-    setSelectedMember({
-      id,
-      firstName,
-      lastName,
-      avatar,
-      email,
-      role,
-      createdAt,
-      studentId,
-    });
-    setOpenEditModal(true);
-  };
+  // const handleEditButtonClick = () => {
+  //   setOpen(null);
+  //   setSelectedMember({
+  //     id,
+  //     firstName,
+  //     lastName,
+  //     avatar,
+  //     email,
+  //     role,
+  //     createdAt,
+  //     studentId,
+  //   });
+  //   setOpenEditModal(true);
+  // };
 
   const fullName = firstName + ' ' + lastName;
 
   const roleCus = role === Role.ADMIN ? Role.ADMIN : Role.USER;
-
+  console.log(studentId);
   return (
     <>
       <TableRow hover tabIndex={-1}>
@@ -95,7 +94,7 @@ export default function MemberTableRow({
         </TableCell>
         <TableCell>{email}</TableCell>
         <TableCell>{fDate(createdAt)}</TableCell>
-
+        {/* 
         {role === Role.STUDENT ? (
           <TableCell align="right">
             <IconButton onClick={handleOpenMenu}>
@@ -104,10 +103,10 @@ export default function MemberTableRow({
           </TableCell>
         ) : (
           <TableCell height={68}>{id === createdById && 'Owner'} </TableCell>
-        )}
+        )} */}
       </TableRow>
 
-      {role === Role.STUDENT && (
+      {/* {role === Role.STUDENT && (
         <Popover
           open={!!open}
           anchorEl={open}
@@ -123,14 +122,14 @@ export default function MemberTableRow({
             Student Id
           </MenuItem>
         </Popover>
-      )}
+      )} */}
 
-      <EditMemberModal
+      {/* <EditMemberModal
         open={openEditModal}
         onClose={handleCloseEditModal}
         member={selectedMember}
         setSelectedMember={setSelectedMember}
-      />
+      /> */}
     </>
   );
 }

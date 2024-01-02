@@ -64,8 +64,8 @@ const NewUserForm = ({ open, onClose, order, page, rowsPerPage }) => {
         await queryClient.invalidateQueries({
           queryKey: ['list-users', { order, page: page + 1, take: rowsPerPage }],
         });
-        reset();
         toast.success(USER_MESSAGES.CHECK_EMAIL);
+        reset();
         onClose();
       },
       onError: (error) => {
@@ -84,25 +84,8 @@ const NewUserForm = ({ open, onClose, order, page, rowsPerPage }) => {
     });
   });
 
-  const handleAddUser = () => {
-    // Add logic to handle adding a new user
-    // Call onAddUser with the new user data
-    // Close the modal
-  };
-
   return (
     <Dialog open={open}>
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          display: signupMutation.isPending ? 'flex' : 'none', // Hiển thị khi isLoading là true
-        }}
-      >
-        <CircularProgress />
-      </Box>
       <DialogTitle
         variant="h4"
         sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
@@ -113,6 +96,19 @@ const NewUserForm = ({ open, onClose, order, page, rowsPerPage }) => {
         </IconButton>
       </DialogTitle>
       <DialogContent>
+        {signupMutation.isPending && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              // display: signupMutation.isPending ? 'flex' : 'none', // Hiển thị khi isLoading là true
+            }}
+          >
+            <CircularProgress />
+          </Box>
+        )}
         <Stack spacing={2} sx={{ marginTop: 1 }}>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <div>

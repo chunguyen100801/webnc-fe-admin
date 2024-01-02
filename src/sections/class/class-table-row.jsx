@@ -110,9 +110,7 @@ export default function ClassTableRow({
             <Avatar alt={name} src={avatar}>
               {name.charAt(0).toUpperCase()}
             </Avatar>
-            <Typography variant="subtitle2" noWrap>
-              {name}
-            </Typography>
+            <Typography variant="subtitle2">{name}</Typography>
           </Stack>
         </TableCell>
         <TableCell>{code}</TableCell>

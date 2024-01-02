@@ -127,7 +127,7 @@ export default function MemberView() {
                   { id: 'firstName', label: 'Name' },
                   { id: 'email', label: 'Email' },
                   { id: 'joinAt', label: 'Join at' },
-                  { id: '' },
+                  // { id: '' },
                 ]}
               />
 
@@ -194,7 +194,7 @@ export default function MemberView() {
                   { id: 'firstName', label: 'Name' },
                   { id: 'email', label: 'Email' },
                   { id: 'joinAt', label: 'Join at' },
-                  { id: '' },
+                  // { id: '' },
                 ]}
               />
 
@@ -205,13 +205,14 @@ export default function MemberView() {
                     index={index}
                     key={row?.student?.id}
                     id={row?.student.id}
-                    studentId={row?.studentId}
+                    // studentId={row?.studentId}
                     firstName={row?.student.firstName}
                     lastName={row?.student.lastName}
                     role={Role.STUDENT}
                     email={row?.student.email}
                     avatar={row?.student.avatar}
                     createdAt={row?.student?.createdAt}
+                    studentId={row?.student?.studentId}
                   />
                 ))}
 

@@ -14,7 +14,7 @@ export const authApiPath = {
 export const userApiPath = {
   listUser: PREFIX_USER,
   getProfile: PREFIX_USER + 'me',
-  changePassword: PREFIX_USER + 'change-password',
+  changePassword: PREFIX_USER + 'me/change-password',
   forgotPassword: PREFIX_USER + 'forgot-password',
   resetPassword: PREFIX_USER + 'reset-password',
   updateUserProfile: PREFIX_USER,
