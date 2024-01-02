@@ -29,11 +29,9 @@ import { Icon } from '@iconify/react';
 import memberApi from 'src/apis/member.api';
 import { useParams } from 'react-router-dom';
 
-const EditMemberModal = ({ open, onClose, member, setSelectedMember }) => {
+const EditStudentIDModal = ({ open, onClose, member, setSelectedMember }) => {
   const queryClient = useQueryClient();
-  const params = useParams();
 
-  const classId = params?.classId;
   const {
     register,
     reset,
@@ -53,11 +51,11 @@ const EditMemberModal = ({ open, onClose, member, setSelectedMember }) => {
   // eslint-disable-next-line arrow-body-style
 
   const mapStudenIdMutation = useMutation({
-    mutationFn: (body) => memberApi.mapStudentId({ userId: member.id, classId }, body),
+    mutationFn: (body) => memberApi.mapStudentId({ userId: member.id }, body),
   });
 
   const unmapStudenIdMutation = useMutation({
-    mutationFn: (body) => memberApi.unmapStudentId({ userId: member.id, classId }, body),
+    mutationFn: (body) => memberApi.unmapStudentId({ userId: member.id }, body),
   });
 
   const onClickMap = handleSubmit((data) => {
@@ -65,7 +63,7 @@ const EditMemberModal = ({ open, onClose, member, setSelectedMember }) => {
     mapStudenIdMutation.mutate(data, {
       onSuccess: async (res) => {
         await queryClient.invalidateQueries({
-          queryKey: ['list-member'],
+          queryKey: ['list-users'],
         });
         reset();
         toast.success(res.data.message);
@@ -80,7 +78,7 @@ const EditMemberModal = ({ open, onClose, member, setSelectedMember }) => {
     unmapStudenIdMutation.mutate(data, {
       onSuccess: async (res) => {
         await queryClient.invalidateQueries({
-          queryKey: ['list-member'],
+          queryKey: ['list-users'],
         });
         reset();
         toast.success(res.data.message);
@@ -109,12 +107,12 @@ const EditMemberModal = ({ open, onClose, member, setSelectedMember }) => {
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center',
+          // alignItems: 'center',
           marginY: 2,
         }}
       >
         {member?.email}
-        <IconButton onClick={onClose} color="inherit" size="small">
+        <IconButton onClick={onClose} color="inherit" size="small" sx={{ marginLeft: 3 }}>
           <Icon icon="material-symbols:close" width="25" />
         </IconButton>
       </DialogTitle>
@@ -154,11 +152,11 @@ const EditMemberModal = ({ open, onClose, member, setSelectedMember }) => {
   );
 };
 
-EditMemberModal.propTypes = {
+EditStudentIDModal.propTypes = {
   open: PropTypes.any,
   onClose: PropTypes.any,
   member: PropTypes.any,
   setSelectedMember: PropTypes.any,
 };
 
-export default EditMemberModal;
+export default EditStudentIDModal;

@@ -25,6 +25,7 @@ import { AppContext } from 'src/context/app.context';
 import { fDate } from 'src/utils/format-time';
 import LockUserModal from 'src/components/User/LockUser';
 import DeleteUserModal from 'src/components/User/DeleteUserForm';
+import EditStudentIDModal from 'src/components/User/EditStudentIDModal';
 
 // ----------------------------------------------------------------------
 
@@ -44,9 +45,11 @@ export default function UserTableRow({
   handleClick,
   sex,
   queryUserList,
+  studentId,
 }) {
   const [open, setOpen] = useState(null);
   const [openEditModal, setOpenEditModal] = useState(false);
+  const [openEditStudentIDModal, setOpenEditStudentIDModal] = useState(false);
   const [openBanModal, setOpenBanModal] = useState(false);
   const [openDeleteUserModal, setOpenDeleteUserModal] = useState(false);
 
@@ -65,6 +68,11 @@ export default function UserTableRow({
   const handleCloseEditModal = () => {
     setOpen(null);
     setOpenEditModal(false);
+  };
+
+  const handleCloseEditStudentIDModal = () => {
+    setOpen(null);
+    setOpenEditStudentIDModal(false);
   };
 
   const handleCloseBanModal = () => {
@@ -94,6 +102,16 @@ export default function UserTableRow({
       sex,
     });
     setOpenEditModal(true);
+  };
+
+  const handleEditStudentIdButtonClick = () => {
+    setOpen(null);
+    setSelectedUser({
+      id,
+      email,
+      studentId,
+    });
+    setOpenEditStudentIDModal(true);
   };
 
   const fullName = firstName + ' ' + lastName;
@@ -175,6 +193,12 @@ export default function UserTableRow({
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
         </MenuItem>
+        {roleCus === Role.USER && (
+          <MenuItem onClick={handleEditStudentIdButtonClick}>
+            <Iconify icon="teenyicons:id-outline" sx={{ mr: 2 }} />
+            Student Id
+          </MenuItem>
+        )}
 
         <MenuItem onClick={handleBanButtonClick}>
           {deleted ? (
@@ -200,6 +224,13 @@ export default function UserTableRow({
         onClose={handleCloseEditModal}
         user={selectedUser}
         queryUserList={queryUserList}
+      />
+
+      <EditStudentIDModal
+        open={openEditStudentIDModal}
+        onClose={handleCloseEditStudentIDModal}
+        member={selectedUser}
+        setSelectedMember={setSelectedUser}
       />
 
       <LockUserModal
@@ -235,4 +266,5 @@ UserTableRow.propTypes = {
   address: PropTypes.string,
   phoneNumber: PropTypes.string,
   sex: PropTypes.string,
+  studentId: PropTypes.string,
 };
