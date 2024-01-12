@@ -90,7 +90,7 @@ const NewUserForm = ({ open, onClose, order, page, rowsPerPage }) => {
         variant="h4"
         sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
       >
-        Add New User
+        Add New Account
         <IconButton onClick={onClose} color="inherit" size="small">
           <Icon icon="material-symbols:close" width="25" />
         </IconButton>
@@ -222,7 +222,7 @@ const NewUserForm = ({ open, onClose, order, page, rowsPerPage }) => {
           Cancel
         </Button>
         <Button onClick={onSubmit} disabled={signupMutation.isPending} color="primary">
-          Add User
+          Add Account
         </Button>
       </DialogActions>
     </Dialog>

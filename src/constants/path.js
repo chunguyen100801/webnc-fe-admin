@@ -2,6 +2,7 @@
 const adminPrefix = '/admin';
 
 const path = {
+  account: adminPrefix + '/accounts',
   user: adminPrefix + '/users',
   signin: adminPrefix + '/signin',
   logout: adminPrefix + '/logout',

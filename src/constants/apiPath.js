@@ -21,6 +21,7 @@ export const userApiPath = {
   lockUser: PREFIX_USER,
   unlockUser: PREFIX_USER,
   deleteUser: PREFIX_USER,
+  listNotAdmin: PREFIX_USER + 'list/not-admin',
 };
 
 export const classApiPath = {

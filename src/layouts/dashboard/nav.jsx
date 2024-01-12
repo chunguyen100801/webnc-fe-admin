@@ -85,7 +85,7 @@ export default function Nav({ openNav, onCloseNav }) {
       }}
     >
       <div className="text-center mt-10">
-        <RouterLink to={path.user}>
+        <RouterLink to={path.account}>
           <Typography variant="h4" className="text-blue-500">
             Classroom
           </Typography>

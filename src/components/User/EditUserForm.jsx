@@ -278,7 +278,7 @@ const EditUserForm = ({ open, onClose, queryUserList, user }) => {
           Cancel
         </Button>
         <Button onClick={onSubmit} disabled={updateProfileMutation.isPending} color="primary">
-          Update User
+          Update
         </Button>
       </DialogActions>
     </Dialog>

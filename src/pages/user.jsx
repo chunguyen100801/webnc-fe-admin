@@ -8,7 +8,7 @@ export default function UserPage() {
   return (
     <>
       <Helmet>
-        <title> User | Admin</title>
+        <title> Accounts | Admin</title>
       </Helmet>
 
       <UserView />
