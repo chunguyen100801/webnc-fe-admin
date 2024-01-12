@@ -23,6 +23,9 @@ import { EditClassModal } from 'src/components/Class';
 import DeleteClassModal from 'src/components/Class/DeleteClassModal';
 import { RouterLink } from 'src/routes/components';
 import path from 'src/constants/path';
+import Label from 'src/components/label';
+import { Status } from 'src/constants/const';
+import LockClassModal from 'src/components/Class/LockClassModal';
 // import LockClassModal from 'src/components/Class/LockClass';
 // import DeleteClassModal from 'src/components/Class/DeleteClassForm';
 
@@ -43,10 +46,12 @@ export default function ClassTableRow({
   courseTeachers,
   enrollments,
   createdBy,
+  deleted,
 }) {
   const [open, setOpen] = useState(null);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [openDeleteClassModal, setOpenDeleteClassModal] = useState(false);
+  const [openLockClassModal, setOpenLockClassModal] = useState(false);
 
   const [selectedClass, setSelectedClass] = useState(null);
 
@@ -68,6 +73,11 @@ export default function ClassTableRow({
     setOpenDeleteClassModal(false);
   };
 
+  const handleCloseLockClassModal = () => {
+    setOpen(null);
+    setOpenLockClassModal(false);
+  };
+
   const handleEditButtonClick = () => {
     setOpen(null);
     setSelectedClass({
@@ -86,14 +96,15 @@ export default function ClassTableRow({
     setOpenEditModal(true);
   };
 
-  const handleDeleteButtonClick = () => {
+  const handleBanButtonClick = () => {
     setOpen(null);
     setSelectedClass({
       id,
       name,
       code,
+      deleted,
     });
-    setOpenDeleteClassModal(true);
+    setOpenLockClassModal(true);
   };
 
   // eslint-disable-next-line no-unsafe-optional-chaining
@@ -114,12 +125,15 @@ export default function ClassTableRow({
           </Stack>
         </TableCell>
         <TableCell>{code}</TableCell>
-        <TableCell>{topic}</TableCell>
         <TableCell align="center">{room}</TableCell>
         <TableCell align="center">{memberTotal}</TableCell>
         <TableCell>{createdBy?.email}</TableCell>
         <TableCell align="center">{fDate(createdAt)}</TableCell>
-
+        <TableCell>
+          <Label color={(deleted === true && 'error') || 'success'}>
+            {deleted ? Status.LOCKED : Status.ACTIVE}
+          </Label>
+        </TableCell>
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
             <Iconify icon="eva:more-vertical-fill" />
@@ -149,9 +163,18 @@ export default function ClassTableRow({
           </MenuItem>
         </RouterLink>
 
-        <MenuItem onClick={handleDeleteButtonClick} sx={{ color: 'error.main' }}>
-          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-          Delete
+        <MenuItem onClick={handleBanButtonClick}>
+          {deleted ? (
+            <>
+              <Iconify icon="eva:unlock-fill" sx={{ mr: 2 }} />
+              Unlock
+            </>
+          ) : (
+            <>
+              <Iconify icon="eva:lock-fill" sx={{ mr: 2 }} />
+              Lock
+            </>
+          )}
         </MenuItem>
       </Popover>
       <EditClassModal
@@ -165,6 +188,14 @@ export default function ClassTableRow({
       <DeleteClassModal
         open={openDeleteClassModal}
         onClose={handleCloseDeleteClassModal}
+        classes={selectedClass}
+        queryClassList={queryClassList}
+        setSelectedClass={setSelectedClass}
+      />
+
+      <LockClassModal
+        open={openLockClassModal}
+        onClose={handleCloseLockClassModal}
         classes={selectedClass}
         queryClassList={queryClassList}
         setSelectedClass={setSelectedClass}
@@ -188,4 +219,5 @@ ClassTableRow.propTypes = {
   courseTeachers: PropTypes.any,
   enrollments: PropTypes.any,
   createdBy: PropTypes.any,
+  deleted: PropTypes.any,
 };
