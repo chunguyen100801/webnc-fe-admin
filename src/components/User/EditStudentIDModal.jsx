@@ -63,7 +63,7 @@ const EditStudentIDModal = ({ open, onClose, member, setSelectedMember }) => {
     mapStudenIdMutation.mutate(data, {
       onSuccess: async (res) => {
         await queryClient.invalidateQueries({
-          queryKey: ['list-users'],
+          queryKey: ['list-users-not-admin'],
         });
         reset();
         toast.success(res.data.message);
@@ -78,7 +78,7 @@ const EditStudentIDModal = ({ open, onClose, member, setSelectedMember }) => {
     unmapStudenIdMutation.mutate(data, {
       onSuccess: async (res) => {
         await queryClient.invalidateQueries({
-          queryKey: ['list-users'],
+          queryKey: ['list-users-not-admin'],
         });
         reset();
         toast.success(res.data.message);

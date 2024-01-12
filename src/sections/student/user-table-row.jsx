@@ -36,22 +36,12 @@ export default function UserTableRow({
   lastName,
   avatar,
   email,
-  role,
-  verify,
-  deleted,
-  address,
-  phoneNumber,
-  createdAt,
-  handleClick,
-  sex,
   queryUserList,
   studentId,
+  classCount,
 }) {
   const [open, setOpen] = useState(null);
-  const [openEditModal, setOpenEditModal] = useState(false);
   const [openEditStudentIDModal, setOpenEditStudentIDModal] = useState(false);
-  const [openBanModal, setOpenBanModal] = useState(false);
-  const [openDeleteUserModal, setOpenDeleteUserModal] = useState(false);
 
   const [selectedUser, setSelectedUser] = useState(null);
 
@@ -65,43 +55,9 @@ export default function UserTableRow({
     setOpen(null);
   };
 
-  const handleCloseEditModal = () => {
-    setOpen(null);
-    setOpenEditModal(false);
-  };
-
   const handleCloseEditStudentIDModal = () => {
     setOpen(null);
     setOpenEditStudentIDModal(false);
-  };
-
-  const handleCloseBanModal = () => {
-    setOpen(null);
-    setOpenBanModal(false);
-  };
-
-  const handleCloseDeleteUserModal = () => {
-    setOpen(null);
-    setOpenDeleteUserModal(false);
-  };
-
-  const handleEditButtonClick = () => {
-    setOpen(null);
-    setSelectedUser({
-      id,
-      firstName,
-      lastName,
-      avatar,
-      email,
-      role,
-      verify,
-      deleted,
-      address,
-      phoneNumber,
-      createdAt,
-      sex,
-    });
-    setOpenEditModal(true);
   };
 
   const handleEditStudentIdButtonClick = () => {
@@ -116,38 +72,10 @@ export default function UserTableRow({
 
   const fullName = firstName + ' ' + lastName;
 
-  const handleBanButtonClick = () => {
-    setOpen(null);
-    setSelectedUser({
-      id,
-      email,
-      fullName,
-      deleted,
-    });
-    setOpenBanModal(true);
-  };
-
-  const handleDeleteButtonClick = () => {
-    setOpen(null);
-    setSelectedUser({
-      id,
-      email,
-      fullName,
-      deleted,
-    });
-    setOpenDeleteUserModal(true);
-  };
-
-  const roleCus = role === Role.ADMIN ? Role.ADMIN : Role.USER;
-
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell padding="checkbox">
-          {profile.id !== id && (
-            <Checkbox disableRipple checked={selected} onChange={handleClick} />
-          )}
-        </TableCell>
+        <TableCell sx={{ paddingLeft: '3rem' }}>{studentId}</TableCell>
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Avatar alt={fullName} src={avatar}>
@@ -159,14 +87,7 @@ export default function UserTableRow({
           </Stack>
         </TableCell>
         <TableCell>{email}</TableCell>
-        <TableCell>{fDate(createdAt)}</TableCell>
-        <TableCell>{roleCus.charAt(0).toUpperCase() + roleCus.slice(1).toLowerCase()}</TableCell>
-        <TableCell align="center">{verify === Verify.VERIFY ? 'Yes' : 'No'}</TableCell>
-        <TableCell>
-          <Label color={(deleted === true && 'error') || 'success'}>
-            {deleted ? Status.LOCKED : Status.ACTIVE}
-          </Label>
-        </TableCell>
+        <TableCell align="center">{classCount}</TableCell>
 
         {profile.id !== id ? (
           <TableCell align="right">
@@ -189,56 +110,17 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={handleEditButtonClick}>
-          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
-          Edit
-        </MenuItem>
-
-        <MenuItem onClick={handleBanButtonClick}>
-          {deleted ? (
-            <>
-              <Iconify icon="eva:unlock-fill" sx={{ mr: 2 }} />
-              Unlock
-            </>
-          ) : (
-            <>
-              <Iconify icon="eva:lock-fill" sx={{ mr: 2 }} />
-              Lock
-            </>
-          )}
-        </MenuItem>
-
-        <MenuItem onClick={handleDeleteButtonClick} sx={{ color: 'error.main' }}>
-          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-          Delete
+        <MenuItem onClick={handleEditStudentIdButtonClick}>
+          <Iconify icon="teenyicons:id-outline" sx={{ mr: 2 }} />
+          Student Id
         </MenuItem>
       </Popover>
-      <EditUserModal
-        open={openEditModal}
-        onClose={handleCloseEditModal}
-        user={selectedUser}
-        queryUserList={queryUserList}
-      />
 
       <EditStudentIDModal
         open={openEditStudentIDModal}
         onClose={handleCloseEditStudentIDModal}
         member={selectedUser}
         setSelectedMember={setSelectedUser}
-      />
-
-      <LockUserModal
-        open={openBanModal}
-        onClose={handleCloseBanModal}
-        user={selectedUser}
-        queryUserList={queryUserList}
-      />
-
-      <DeleteUserModal
-        open={openDeleteUserModal}
-        onClose={handleCloseDeleteUserModal}
-        user={selectedUser}
-        queryUserList={queryUserList}
       />
     </>
   );
@@ -248,17 +130,10 @@ UserTableRow.propTypes = {
   id: PropTypes.any.isRequired,
   avatar: PropTypes.any,
   email: PropTypes.any,
-  handleClick: PropTypes.func,
-  verify: PropTypes.any,
   firstName: PropTypes.any,
   lastName: PropTypes.any,
-  role: PropTypes.any,
   selected: PropTypes.any,
-  deleted: PropTypes.bool,
-  createdAt: PropTypes.any,
   queryUserList: PropTypes.any,
-  address: PropTypes.string,
-  phoneNumber: PropTypes.string,
-  sex: PropTypes.string,
   studentId: PropTypes.string,
+  classCount: PropTypes.any,
 };

@@ -53,7 +53,7 @@ export default function ChangePasswordView() {
     changePasswordMutation.mutate(data, {
       onSuccess: (res) => {
         toast.success(res.data?.message);
-        router.push(path.user);
+        router.push(path.account);
       },
       onError: (error) => {
         reset();

@@ -80,7 +80,7 @@ export default function LoginView() {
       const profile = getMeQuery.data.data;
       setIsAuthenticated(true);
       setProfile(profile);
-      navigate(path.user);
+      navigate(path.account);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getMeQuery.isSuccess]);

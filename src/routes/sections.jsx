@@ -16,6 +16,7 @@ export const ClassPage = lazy(() => import('src/pages/class'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const FotgotPasswordPage = lazy(() => import('src/pages/forgotpassword'));
 export const ChangePasswordPage = lazy(() => import('src/pages/change-password'));
+export const StudentPage = lazy(() => import('src/pages/student'));
 
 // ----------------------------------------------------------------------
 
@@ -26,7 +27,7 @@ function ProjectedRoute() {
 
 function RejectedRoute() {
   const { isAuthenticated } = useContext(AppContext);
-  return !isAuthenticated ? <Outlet /> : <Navigate to={path.user} replace />;
+  return !isAuthenticated ? <Outlet /> : <Navigate to={path.account} replace />;
 }
 
 export default function Router() {
@@ -45,9 +46,10 @@ export default function Router() {
             </DashboardLayout>
           ),
           children: [
-            { element: <Navigate to={path.user} replace />, index: true },
-            { path: path.user, element: <UserPage /> },
+            { element: <Navigate to={path.account} replace />, index: true },
+            { path: path.account, element: <UserPage /> },
             { path: path.class, element: <ClassPage /> },
+            { path: path.user, element: <StudentPage /> },
             { path: path.classDetail, element: <MemberPage /> },
             { path: path.change_password, element: <ChangePasswordPage /> },
           ],
