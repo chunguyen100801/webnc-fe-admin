@@ -49,7 +49,7 @@ export default function UserTableToolbar({
         key={searchKey}
         defaultValue={filterName === ' ' ? '' : filterName}
         onChange={onFilterName}
-        placeholder="Search by name, email"
+        placeholder="name, email, student Id"
         startAdornment={
           <InputAdornment position="start">
             <Iconify

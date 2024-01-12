@@ -234,6 +234,7 @@ export default function UserView() {
                     phoneNumber={row?.phoneNumber}
                     sex={row?.sex}
                     queryUserList={queryUserList}
+                    studentId={row?.studentId}
                   />
                 ))}
 
