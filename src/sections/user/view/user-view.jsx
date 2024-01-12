@@ -41,7 +41,7 @@ export default function UserView() {
 
   const [selected, setSelected] = useState([]);
 
-  const [orderBy, setOrderBy] = useState('registrationTime');
+  const [orderBy, setOrderBy] = useState('firstName');
 
   const [filterName, setFilterName] = useState(' ');
 
