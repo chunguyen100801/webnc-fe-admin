@@ -28,6 +28,8 @@ export const classApiPath = {
   updateClass: PREFIX_CLASS,
   uploadAvatarClass: PREFIX_CLASS,
   deleteClass: PREFIX_CLASS,
+  lockClass: PREFIX_CLASS,
+  unLockClass: PREFIX_CLASS,
 };
 
 export const memberApiPath = {
