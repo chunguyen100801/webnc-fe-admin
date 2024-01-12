@@ -16,6 +16,11 @@ const userApi = {
       params: query,
     }),
 
+  getListUserNotAdmin: (query) =>
+    http.get(userApiPath.listNotAdmin, {
+      params: query,
+    }),
+
   updateUserProfile: (userId, body) =>
     http.patch(userApiPath.updateUserProfile + userId, body, {
       headers: {
@@ -27,6 +32,8 @@ const userApi = {
   unlockUser: (id) => http.patch(`${userApiPath.unlockUser + id}/unlock`),
   deleteUser: (id) => http.delete(`${userApiPath.deleteUser + id}`),
   deleteUserList: (body) => http.delete(`${userApiPath.deleteUser}list/${body.join(',')}`),
+
+  mapStudentIdList: (body) => http.patch('users/map/students-list', body),
 };
 
 export default userApi;

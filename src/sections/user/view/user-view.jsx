@@ -159,7 +159,7 @@ export default function UserView() {
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mt={3} mb={3}>
         <Typography variant="h4" className="text-blue-500">
-          Users
+          Accounts
         </Typography>
         <Button
           variant="contained"
@@ -167,7 +167,7 @@ export default function UserView() {
           startIcon={<Iconify icon="eva:plus-fill" />}
           onClick={() => setOpenNewUserModal(true)}
         >
-          New User
+          New Account
         </Button>
       </Stack>
 

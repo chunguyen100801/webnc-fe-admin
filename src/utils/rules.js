@@ -100,5 +100,18 @@ export const classSchema = zod.object({
 });
 
 export const memberSchema = zod.object({
-  studentId: zod.string().min(1, 'Student Id is required').max(20, 'Maximum length is 20 characters'),
+  studentId: zod
+    .string()
+    .min(1, 'Student Id is required')
+    .max(20, 'Maximum length is 20 characters'),
 });
+
+export const uploadStudentId = zod.object({
+  Email: authValidation.email,
+  StudentId: zod
+    .string()
+    .min(1, 'Student Id is required')
+    .max(20, 'Maximum length is 20 characters'),
+});
+
+export const uploadStudentIdArray = zod.array(uploadStudentId);
