@@ -76,7 +76,7 @@ export default function MemberTableRow({
   const fullName = firstName + ' ' + lastName;
 
   const roleCus = role === Role.ADMIN ? Role.ADMIN : Role.USER;
-  console.log(studentId);
+
   return (
     <>
       <TableRow hover tabIndex={-1}>

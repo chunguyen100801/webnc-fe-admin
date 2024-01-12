@@ -1,3 +1,5 @@
+/* eslint-disable unused-imports/no-unused-imports */
+/* eslint-disable no-unused-vars */
 /* eslint-disable perfectionist/sort-imports */
 import PropTypes from 'prop-types';
 
@@ -65,11 +67,11 @@ export default function ClassTableToolbar({
           <Typography component="div" variant="subtitle1" sx={{ verticalAlign: 'middle' }}>
             {numSelected} selected
           </Typography>
-          <Tooltip title="Delete">
+          {/* <Tooltip title="Delete">
             <IconButton sx={{ color: 'error.main' }} onClick={handleClickDelete}>
               <Iconify icon="eva:trash-2-outline" width={25} />
             </IconButton>
-          </Tooltip>
+          </Tooltip> */}
         </Stack>
       ) : (
         // eslint-disable-next-line react/jsx-no-useless-fragment

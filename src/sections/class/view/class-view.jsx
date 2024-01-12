@@ -189,11 +189,11 @@ export default function ClassView() {
                 headLabel={[
                   { id: 'name', label: 'Class name' },
                   { id: 'code', label: 'Code' },
-                  { id: 'topic', label: 'Topic' },
                   { id: 'room', label: 'Room', align: 'center' },
                   { id: 'member', label: 'Members', align: 'center' },
                   { id: 'owner', label: 'Owner' },
                   { id: 'creationTime', label: 'Creation time', align: 'center' },
+                  { id: 'status', label: 'Status' },
                   { id: '' },
                 ]}
               />
@@ -217,6 +217,7 @@ export default function ClassView() {
                     handleClick={(event) => handleClick(event, row?.id)}
                     queryClassList={queryClassList}
                     createdBy={row?.createdBy}
+                    deleted={row?.deleted}
                   />
                 ))}
 

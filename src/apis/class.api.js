@@ -17,6 +17,9 @@ const classApi = {
     }),
 
   deleteClass: (ids) => http.delete(`${classApiPath.deleteClass}${ids.join(',')}`),
+
+  lockClass: (id) => http.patch(`${classApiPath.lockClass + id}/lock`),
+  unLockClass: (id) => http.patch(`${classApiPath.unLockClass + id}/un-lock`),
 };
 
 export default classApi;
