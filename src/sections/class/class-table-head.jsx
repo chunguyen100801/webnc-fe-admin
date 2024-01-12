@@ -21,7 +21,9 @@ export default function ClassTableHead({
   onSelectAllClick,
 }) {
   const onSort = (property) => (event) => {
-    onRequestSort(event, property);
+    if (property === 'name') {
+      onRequestSort(event, property);
+    }
   };
 
   return (
@@ -44,12 +46,12 @@ export default function ClassTableHead({
           >
             <TableSortLabel
               hideSortIcon
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
+              active={headCell.id === 'name'}
+              direction={headCell.id === 'name' ? order : 'asc'}
               onClick={onSort(headCell.id)}
             >
               {headCell.label}
-              {orderBy === headCell.id ? (
+              {headCell.id === 'name' ? (
                 <Box sx={{ ...visuallyHidden }}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </Box>

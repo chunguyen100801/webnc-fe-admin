@@ -39,7 +39,7 @@ export default function ClassView() {
 
   const [selected, setSelected] = useState([]);
 
-  const [orderBy, setOrderBy] = useState('registrationTime');
+  const [orderBy, setOrderBy] = useState('name');
 
   const [filterName, setFilterName] = useState(' ');
 
@@ -84,6 +84,7 @@ export default function ClassView() {
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
+    console.log(id);
     if (id !== '') {
       setOrder(isAsc ? 'desc' : 'asc');
       setOrderBy(id);
