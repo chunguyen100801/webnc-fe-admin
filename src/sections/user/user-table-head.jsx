@@ -21,7 +21,9 @@ export default function UserTableHead({
   onSelectAllClick,
 }) {
   const onSort = (property) => (event) => {
-    onRequestSort(event, property);
+    if (property === 'firstName') {
+      onRequestSort(event, property);
+    }
   };
 
   return (
@@ -44,12 +46,12 @@ export default function UserTableHead({
           >
             <TableSortLabel
               hideSortIcon
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
+              active={headCell.id === 'firstName'}
+              direction={headCell.id === 'firstName' ? order : 'asc'}
               onClick={onSort(headCell.id)}
             >
               {headCell.label}
-              {orderBy === headCell.id ? (
+              {headCell.id === 'firstName' ? (
                 <Box sx={{ ...visuallyHidden }}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </Box>
