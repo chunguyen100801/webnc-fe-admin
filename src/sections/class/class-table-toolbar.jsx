@@ -64,9 +64,9 @@ export default function ClassTableToolbar({
 
       {numSelected > 0 ? (
         <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
-          <Typography component="div" variant="subtitle1" sx={{ verticalAlign: 'middle' }}>
+          {/* <Typography component="div" variant="subtitle1" sx={{ verticalAlign: 'middle' }}>
             {numSelected} selected
-          </Typography>
+          </Typography> */}
           {/* <Tooltip title="Delete">
             <IconButton sx={{ color: 'error.main' }} onClick={handleClickDelete}>
               <Iconify icon="eva:trash-2-outline" width={25} />

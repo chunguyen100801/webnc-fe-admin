@@ -19,6 +19,7 @@ export default function UserTableHead({
   numSelected,
   onRequestSort,
   onSelectAllClick,
+  isLoading,
 }) {
   const onSort = (property) => (event) => {
     if (property === 'firstName') {
@@ -34,6 +35,7 @@ export default function UserTableHead({
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
+            disabled={isLoading}
           />
         </TableCell>
 
@@ -72,4 +74,5 @@ UserTableHead.propTypes = {
   numSelected: PropTypes.number,
   onRequestSort: PropTypes.func,
   onSelectAllClick: PropTypes.func,
+  isLoading: PropTypes.any,
 };

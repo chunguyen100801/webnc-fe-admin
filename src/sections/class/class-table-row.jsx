@@ -113,11 +113,11 @@ export default function ClassTableRow({
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell padding="checkbox">
+        {/* <TableCell padding="checkbox">
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
-        </TableCell>
+        </TableCell> */}
         <TableCell component="th" scope="row" padding="none">
-          <Stack direction="row" alignItems="center" spacing={2}>
+          <Stack direction="row" alignItems="center" spacing={2} sx={{ paddingLeft: '1rem' }}>
             <Avatar alt={name} src={avatar}>
               {name.charAt(0).toUpperCase()}
             </Avatar>

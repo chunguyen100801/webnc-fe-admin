@@ -203,6 +203,7 @@ export default function UserView() {
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
+                isLoading={userData.isLoading}
                 headLabel={[
                   { id: 'firstName', label: 'Name' },
                   { id: 'email', label: 'Email' },
