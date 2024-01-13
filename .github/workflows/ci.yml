@@ -53,12 +53,12 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
-      # - name: Deloy to render with hook
-      #   if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
-      #   env:
-      #     deploy_url: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
-      #   run: |
-      #     curl "$deploy_url"
+      - name: Deloy to render with hook
+        if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+        env:
+          deploy_url: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          curl "$deploy_url"
 
       - name: Remove cache
         run: |
