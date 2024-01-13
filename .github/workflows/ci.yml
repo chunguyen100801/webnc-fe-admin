@@ -2,9 +2,9 @@ name: Build and push to docker hub
 
 on:
   push:
-    branches: ['master']
+    branches: ['main']
   pull_request:
-    branches: ['master']
+    branches: ['main']
 
 env:
   IMAGE_NAME: ${{ vars.IMAGE_NAME }}
